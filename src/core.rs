@@ -294,6 +294,18 @@ impl Texture {
     {
         // Wgpu's coordinate system has a downwards pointing Y axis.
         let destination = rect.to_box2d();
+        // Make sure we have a positive rectangle
+        let destination = Box2D::<i32, ScreenSpace>::new(
+            Point2D::new(
+                destination.min.x.min(destination.max.x),
+                destination.min.y.min(destination.max.y),
+            ),
+            Point2D::new(
+                destination.max.x.max(destination.min.x),
+                destination.max.y.max(destination.min.y),
+            ),
+        );
+        // flip y, making it negative in the y direction
         let destination = Box2D::new(
             Point2D::new(destination.min.x, destination.max.y),
             Point2D::new(destination.max.x, destination.min.y),
@@ -301,13 +313,13 @@ impl Texture {
         let rect = destination.to_rect();
 
         // The width and height of the transfer area.
-        let destination_size = rect.size.cast::<u32>();
+        let destination_size = rect.size.abs().cast::<u32>();
 
         // The destination coordinate of the transfer, on the texture.
         // We have to invert the Y coordinate as explained above.
         let destination_point = Point2D::new(
             rect.origin.x as f32,
-            texture.size.height as f32 - rect.size.height as f32,
+            texture.size.height as f32 - rect.origin.y as f32,
         );
 
         assert_eq!(
