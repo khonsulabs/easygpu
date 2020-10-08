@@ -1,0 +1,19 @@
+[package]
+name = "easygpu"
+version = "0.1.0"
+description = "Simple wrapper around wgpu aiming to make some common operations easier"
+repository = "https://github.com/khonsulabs/easygpu"
+authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
+license = "MIT"
+edition = "2018"
+keywords = ["graphics", "wgpu"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+euclid = "0.22"
+wgpu = { version = "0.4.0" }
+num-traits = "0.2.8"
+raw-window-handle = { version = "0.3" }
+thiserror = "1"
