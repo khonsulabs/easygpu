@@ -1,4 +1,10 @@
-use crate::core::{BindingGroup, BindingGroupLayout, Device, Frame, Renderer, UniformBuffer};
+use crate::{
+    binding::{BindingGroup, BindingGroupLayout},
+    buffers::UniformBuffer,
+    device::Device,
+    frame::Frame,
+    renderer::Renderer,
+};
 use euclid::Transform3D;
 
 pub struct ScreenSpace;
