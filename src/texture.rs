@@ -169,7 +169,6 @@ impl Texture {
         buffer: &wgpu::Buffer,
         encoder: &mut wgpu::CommandEncoder,
     ) {
-        println!("Copying {:?} using {} per row", destination, bytes_per_row);
         encoder.copy_buffer_to_texture(
             wgpu::BufferCopyView {
                 buffer,
