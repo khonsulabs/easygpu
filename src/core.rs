@@ -7,28 +7,6 @@ use euclid::{Box2D, Point2D, Rect, Size2D};
 use raw_window_handle::HasRawWindowHandle;
 use std::ops::Range;
 
-pub trait Renderable {
-    fn buffer(&self, r: &Renderer) -> VertexBuffer;
-
-    fn finish(self, r: &Renderer) -> VertexBuffer
-    where
-        Self: std::marker::Sized,
-    {
-        self.buffer(r)
-    }
-}
-
-impl Rgba {
-    fn to_wgpu(&self) -> wgpu::Color {
-        wgpu::Color {
-            r: self.r as f64,
-            g: self.g as f64,
-            b: self.b as f64,
-            a: self.a as f64,
-        }
-    }
-}
-
 pub trait Draw {
     fn draw<'a, 'b>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>);
 }
@@ -817,7 +795,7 @@ pub trait PassExt<'a> {
 
     fn set_easy_index_buffer(&mut self, index_buf: &'a IndexBuffer);
     fn set_easy_vertex_buffer(&mut self, vertex_buf: &'a VertexBuffer);
-    fn easy_draw<T: Draw>(&'a mut self, drawable: &'a T, binding: &'a BindingGroup);
+    fn easy_draw<T: Draw>(&mut self, drawable: &'a T, binding: &'a BindingGroup);
     fn draw_buffer(&mut self, buf: &'a VertexBuffer);
     fn draw_buffer_range(&mut self, buf: &'a VertexBuffer, range: Range<u32>);
     fn draw_indexed(&mut self, indices: Range<u32>, instances: Range<u32>);
@@ -838,10 +816,6 @@ impl<'a> PassExt<'a> for wgpu::RenderPass<'a> {
                     load: op.to_wgpu(),
                     store: true,
                 },
-                // clear_color: match op {
-                //     PassOp::Clear(color) => color.to_wgpu(),
-                //     PassOp::Load() => Rgba::TRANSPARENT.to_wgpu(),
-                // },
             }],
             depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
                 attachment: depth,
@@ -877,7 +851,7 @@ impl<'a> PassExt<'a> for wgpu::RenderPass<'a> {
     fn set_easy_vertex_buffer(&mut self, vertex_buf: &'a VertexBuffer) {
         self.set_vertex_buffer(0, vertex_buf.slice())
     }
-    fn easy_draw<T: Draw>(&'a mut self, drawable: &'a T, binding: &'a BindingGroup) {
+    fn easy_draw<T: Draw>(&mut self, drawable: &'a T, binding: &'a BindingGroup) {
         drawable.draw(binding, self);
     }
     fn draw_buffer(&mut self, buf: &'a VertexBuffer) {
@@ -902,7 +876,7 @@ pub enum PassOp {
 impl PassOp {
     fn to_wgpu(&self) -> wgpu::LoadOp<wgpu::Color> {
         match self {
-            PassOp::Clear(color) => wgpu::LoadOp::Clear(color.to_wgpu()),
+            PassOp::Clear(color) => wgpu::LoadOp::Clear((*color).into()),
             PassOp::Load() => wgpu::LoadOp::Load,
         }
     }
@@ -1213,10 +1187,6 @@ where
         }
     }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-/// Device
-///////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug)]
 pub struct Device {
