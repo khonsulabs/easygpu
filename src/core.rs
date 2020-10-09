@@ -49,8 +49,6 @@ pub trait Canvas {
     fn transfer(
         &self,
         buf: &[Self::Color],
-        w: u32,
-        h: u32,
         r: Rect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
@@ -187,13 +185,11 @@ impl Canvas for Framebuffer {
     fn transfer(
         &self,
         buf: &[Bgra8],
-        w: u32,
-        h: u32,
         rect: Rect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) {
-        Texture::transfer(&self.texture, buf, w, h, rect, device, encoder);
+        Texture::transfer(&self.texture, buf, rect, device, encoder);
     }
 
     fn blit(
@@ -266,8 +262,6 @@ impl Texture {
     fn transfer<T: 'static>(
         texture: &Texture,
         texels: &[T],
-        width: u32,
-        height: u32,
         rect: Rect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
@@ -419,13 +413,11 @@ impl Canvas for Texture {
     fn transfer(
         &self,
         buf: &[Rgba8],
-        w: u32,
-        h: u32,
         rect: Rect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) {
-        Texture::transfer(&self, buf, w, h, rect, device, encoder);
+        Texture::transfer(&self, buf, rect, device, encoder);
     }
 
     fn blit(
@@ -1191,8 +1183,6 @@ pub enum Op<'a, T> {
     Transfer {
         f: &'a dyn Canvas<Color = T>,
         buf: &'a [T],
-        w: u32,
-        h: u32,
         rect: Rect<i32, ScreenSpace>,
     },
     Blit(
@@ -1214,8 +1204,8 @@ where
             Op::Fill(f, buf) => {
                 f.fill(buf, dev, encoder);
             }
-            Op::Transfer { f, buf, w, h, rect } => {
-                f.transfer(buf, w, h, rect, dev, encoder);
+            Op::Transfer { f, buf, rect } => {
+                f.transfer(buf, rect, dev, encoder);
             }
             Op::Blit(f, src, dst) => {
                 f.blit(src, dst, encoder);
