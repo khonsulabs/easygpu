@@ -2,7 +2,7 @@ use std::ops::Range;
 
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
-    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer},
+    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
     canvas::Canvas,
     color::{Bgra8, Rgba},
     device::Device,
@@ -13,7 +13,7 @@ use crate::{
     swapchain::SwapChain,
     texture::Texture,
     transform::ScreenSpace,
-    vertex::{VertexBuffer, VertexLayout},
+    vertex::VertexLayout,
 };
 use euclid::{Rect, Size2D};
 use raw_window_handle::HasRawWindowHandle;

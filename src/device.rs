@@ -1,13 +1,13 @@
 use crate::{
     binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
-    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer},
+    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
     pipeline::{Blending, Pipeline, PipelineLayout, Set},
     sampler::Sampler,
     shader::Shader,
     swapchain::SwapChain,
     texture::Texture,
     transform::ScreenSpace,
-    vertex::{VertexBuffer, VertexLayout},
+    vertex::VertexLayout,
 };
 use euclid::Size2D;
 use raw_window_handle::HasRawWindowHandle;

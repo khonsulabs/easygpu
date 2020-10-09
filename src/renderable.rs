@@ -1,4 +1,4 @@
-use crate::{renderer::Renderer, vertex::VertexBuffer};
+use crate::{buffers::VertexBuffer, renderer::Renderer};
 
 pub trait Renderable {
     fn buffer(&self, r: &Renderer) -> VertexBuffer;
