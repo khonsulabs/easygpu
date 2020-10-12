@@ -20,12 +20,12 @@ impl SwapChain {
     ///
     /// When the [`SwapChainTexture`] returned by this method is dropped, the
     /// swapchain will present the texture to the associated [`Renderer`].
-    pub fn next_texture(&mut self) -> SwapChainTexture {
-        SwapChainTexture {
+    pub fn next_texture(&mut self) -> Result<SwapChainTexture, wgpu::SwapChainError> {
+        Ok(SwapChainTexture {
             depth: &self.depth,
-            wgpu: self.wgpu.get_current_frame().unwrap(),
+            wgpu: self.wgpu.get_current_frame()?,
             size: self.size,
-        }
+        })
     }
 
     /// Get the texture format in use
