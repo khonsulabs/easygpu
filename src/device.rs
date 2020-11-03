@@ -11,7 +11,7 @@ use crate::{
 };
 use euclid::Size2D;
 use raw_window_handle::HasRawWindowHandle;
-use wgpu::FilterMode;
+use wgpu::{FilterMode, COPY_BUFFER_ALIGNMENT};
 
 #[derive(Debug)]
 pub struct Device {
@@ -292,7 +292,7 @@ impl Device {
         let byte_length = slice.len() * std::mem::size_of::<T>();
         let src = self.wgpu.create_buffer(&wgpu::BufferDescriptor {
             label: None,
-            size: byte_length as u64,
+            size: pad_byte_length_to_copy_alignment(byte_length),
             mapped_at_creation: true,
             usage,
         });
@@ -417,4 +417,8 @@ impl Device {
             wgpu,
         }
     }
+}
+
+fn pad_byte_length_to_copy_alignment(byte_length: usize) -> u64 {
+    (byte_length as u64 + COPY_BUFFER_ALIGNMENT - 1) / COPY_BUFFER_ALIGNMENT * COPY_BUFFER_ALIGNMENT
 }
