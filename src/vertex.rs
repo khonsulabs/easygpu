@@ -32,7 +32,7 @@ impl VertexFormat {
 /// Describes a 'VertexBuffer' layout.
 #[derive(Default, Debug)]
 pub struct VertexLayout {
-    wgpu_attrs: Vec<wgpu::VertexAttributeDescriptor>,
+    wgpu_attrs: Vec<wgpu::VertexAttribute>,
     size: usize,
 }
 
@@ -40,7 +40,7 @@ impl VertexLayout {
     pub fn from(formats: &[VertexFormat]) -> Self {
         let mut vl = Self::default();
         for vf in formats {
-            vl.wgpu_attrs.push(wgpu::VertexAttributeDescriptor {
+            vl.wgpu_attrs.push(wgpu::VertexAttribute {
                 shader_location: vl.wgpu_attrs.len() as u32,
                 offset: vl.size as wgpu::BufferAddress,
                 format: vf.to_wgpu(),
@@ -50,9 +50,9 @@ impl VertexLayout {
         vl
     }
 
-    pub fn to_wgpu(&self) -> wgpu::VertexBufferDescriptor {
-        wgpu::VertexBufferDescriptor {
-            stride: self.size as wgpu::BufferAddress,
+    pub fn to_wgpu(&self) -> wgpu::VertexBufferLayout {
+        wgpu::VertexBufferLayout {
+            array_stride: self.size as wgpu::BufferAddress,
             step_mode: wgpu::InputStepMode::Vertex,
             attributes: self.wgpu_attrs.as_slice(),
         }

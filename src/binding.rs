@@ -48,20 +48,25 @@ pub enum BindingType {
 impl BindingType {
     pub fn to_wgpu(&self) -> wgpu::BindingType {
         match self {
-            BindingType::UniformBuffer => wgpu::BindingType::UniformBuffer {
-                dynamic: false,
+            BindingType::UniformBuffer => wgpu::BindingType::Buffer {
+                ty: wgpu::BufferBindingType::Uniform,
+                has_dynamic_offset: false,
                 min_binding_size: None,
             },
-            BindingType::UniformBufferDynamic => wgpu::BindingType::UniformBuffer {
-                dynamic: true,
+            BindingType::UniformBufferDynamic => wgpu::BindingType::Buffer {
+                ty: wgpu::BufferBindingType::Uniform,
+                has_dynamic_offset: false,
                 min_binding_size: None,
             },
-            BindingType::SampledTexture => wgpu::BindingType::SampledTexture {
+            BindingType::SampledTexture => wgpu::BindingType::Texture {
+                sample_type: wgpu::TextureSampleType::Float { filterable: false },
                 multisampled: false,
-                dimension: wgpu::TextureViewDimension::D2,
-                component_type: wgpu::TextureComponentType::Float,
+                view_dimension: wgpu::TextureViewDimension::D2,
             },
-            BindingType::Sampler => wgpu::BindingType::Sampler { comparison: true },
+            BindingType::Sampler => wgpu::BindingType::Sampler {
+                comparison: true,
+                filtering: false,
+            },
         }
     }
 }

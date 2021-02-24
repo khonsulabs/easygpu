@@ -260,6 +260,7 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
         op: PassOp,
     ) -> Self {
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            label: None,
             color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
                 attachment: &view,
                 resolve_target: None,
@@ -295,11 +296,13 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
     }
 
     fn set_easy_index_buffer(&mut self, index_buf: &'a IndexBuffer) {
-        self.set_index_buffer(index_buf.slice())
+        self.set_index_buffer(index_buf.slice(), wgpu::IndexFormat::Uint16)
     }
+
     fn set_easy_vertex_buffer(&mut self, vertex_buf: &'a VertexBuffer) {
         self.set_vertex_buffer(0, vertex_buf.slice())
     }
+
     fn easy_draw<T: Draw>(&mut self, drawable: &'a T, binding: &'a BindingGroup) {
         drawable.draw(binding, self);
     }

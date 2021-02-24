@@ -11,7 +11,7 @@ use crate::{
 };
 use euclid::Size2D;
 use raw_window_handle::HasRawWindowHandle;
-use wgpu::{FilterMode, COPY_BUFFER_ALIGNMENT};
+use wgpu::{FilterMode, ShaderFlags, COPY_BUFFER_ALIGNMENT};
 
 #[derive(Debug)]
 pub struct Device {
@@ -32,7 +32,7 @@ impl Device {
                 &wgpu::DeviceDescriptor {
                     features: wgpu::Features::empty(),
                     limits: wgpu::Limits::default(),
-                    shader_validation: false,
+                    label: None,
                 },
                 None,
             )
@@ -79,7 +79,11 @@ impl Device {
         Shader {
             wgpu: self
                 .wgpu
-                .create_shader_module(wgpu::util::make_spirv(source)),
+                .create_shader_module(&wgpu::ShaderModuleDescriptor {
+                    source: wgpu::util::make_spirv(source),
+                    flags: ShaderFlags::default(),
+                    label: None, // TODO labels would be nice
+                }),
         }
     }
 
@@ -87,7 +91,11 @@ impl Device {
         Shader {
             wgpu: self
                 .wgpu
-                .create_shader_module(wgpu::ShaderModuleSource::Wgsl(source.into())),
+                .create_shader_module(&wgpu::ShaderModuleDescriptor {
+                    source: wgpu::ShaderSource::Wgsl(source.into()),
+                    flags: ShaderFlags::default(),
+                    label: None, // TODO labels would be nice
+                }),
         }
     }
 
@@ -139,7 +147,7 @@ impl Device {
             usage: wgpu::TextureUsage::SAMPLED
                 | wgpu::TextureUsage::COPY_DST
                 | wgpu::TextureUsage::COPY_SRC
-                | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+                | wgpu::TextureUsage::RENDER_ATTACHMENT,
             label: None,
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -170,7 +178,7 @@ impl Device {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsage::COPY_DST | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+            usage: wgpu::TextureUsage::COPY_DST | wgpu::TextureUsage::RENDER_ATTACHMENT,
         });
         let view = wgpu.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -260,6 +268,7 @@ impl Device {
                 compare: Some(wgpu::CompareFunction::Always),
                 anisotropy_clamp: None,
                 label: None,
+                border_color: None,
             }),
         }
     }
@@ -359,56 +368,55 @@ impl Device {
             .wgpu
             .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                 label: None,
-                vertex_state: wgpu::VertexStateDescriptor {
-                    index_format: wgpu::IndexFormat::Uint16,
-                    vertex_buffers: &[vertex_attrs],
-                },
                 layout: Some(layout),
-                vertex_stage: wgpu::ProgrammableStageDescriptor {
+                vertex: wgpu::VertexState {
                     module: &vs.wgpu,
                     entry_point: "main",
+                    buffers: &[vertex_attrs],
                 },
-                fragment_stage: Some(wgpu::ProgrammableStageDescriptor {
-                    module: &fs.wgpu,
-                    entry_point: "main",
-                }),
-                rasterization_state: Some(wgpu::RasterizationStateDescriptor {
+                primitive: wgpu::PrimitiveState {
+                    topology: wgpu::PrimitiveTopology::TriangleList,
+                    strip_index_format: None,
                     front_face: wgpu::FrontFace::Ccw,
                     cull_mode: wgpu::CullMode::None,
-                    depth_bias: 0,
-                    depth_bias_slope_scale: 0.0,
-                    depth_bias_clamp: 0.0,
-                    clamp_depth: false,
-                }),
-                primitive_topology: wgpu::PrimitiveTopology::TriangleList,
-                color_states: &[wgpu::ColorStateDescriptor {
-                    format: SwapChain::FORMAT,
-                    color_blend: wgpu::BlendDescriptor {
-                        src_factor,
-                        dst_factor,
-                        operation,
-                    },
-                    alpha_blend: wgpu::BlendDescriptor {
-                        src_factor,
-                        dst_factor,
-                        operation,
-                    },
-                    write_mask: wgpu::ColorWrite::ALL,
-                }],
-                depth_stencil_state: Some(wgpu::DepthStencilStateDescriptor {
+                    polygon_mode: wgpu::PolygonMode::Fill,
+                },
+                depth_stencil: Some(wgpu::DepthStencilState {
                     format: DepthBuffer::FORMAT,
                     depth_write_enabled: true,
                     depth_compare: wgpu::CompareFunction::LessEqual,
-                    stencil: wgpu::StencilStateDescriptor {
-                        front: wgpu::StencilStateFaceDescriptor::IGNORE,
-                        back: wgpu::StencilStateFaceDescriptor::IGNORE,
+                    stencil: wgpu::StencilState {
+                        front: wgpu::StencilFaceState::IGNORE,
+                        back: wgpu::StencilFaceState::IGNORE,
                         read_mask: 0,
                         write_mask: 0,
                     },
+                    bias: wgpu::DepthBiasState {
+                        constant: 0,
+                        slope_scale: 0.,
+                        clamp: 0.,
+                    },
+                    clamp_depth: false,
                 }),
-                sample_count: 1,
-                sample_mask: !0,
-                alpha_to_coverage_enabled: false,
+                multisample: wgpu::MultisampleState::default(),
+                fragment: Some(wgpu::FragmentState {
+                    module: &fs.wgpu,
+                    entry_point: "main",
+                    targets: &[wgpu::ColorTargetState {
+                        format: SwapChain::FORMAT,
+                        color_blend: wgpu::BlendState {
+                            src_factor,
+                            dst_factor,
+                            operation,
+                        },
+                        alpha_blend: wgpu::BlendState {
+                            src_factor,
+                            dst_factor,
+                            operation,
+                        },
+                        write_mask: wgpu::ColorWrite::ALL,
+                    }],
+                }),
             });
 
         Pipeline {

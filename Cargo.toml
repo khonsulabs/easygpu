@@ -1,6 +1,6 @@
 [package]
 name = "easygpu"
-version = "0.0.3"
+version = "0.0.4"
 description = "Simple wrapper around wgpu aiming to make some common operations easier"
 repository = "https://github.com/khonsulabs/easygpu"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
@@ -13,11 +13,11 @@ all-features = true
 
 [dependencies]
 euclid = "0.22"
-wgpu = { version = "0.6.0" }
+wgpu = { version = "0.7.0" }
 num-traits = "0.2"
 raw-window-handle = { version = "0.3" }
 thiserror = "1"
 
 [dev-dependencies]
-winit = "0.23"
+winit = "0.24"
 futures = "0.3"

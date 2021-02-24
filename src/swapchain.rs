@@ -38,7 +38,7 @@ impl SwapChain {
         mode: PresentMode,
     ) -> wgpu::SwapChainDescriptor {
         wgpu::SwapChainDescriptor {
-            usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+            usage: wgpu::TextureUsage::RENDER_ATTACHMENT,
             format: Self::FORMAT,
             present_mode: mode.into(),
             width: size.width,
