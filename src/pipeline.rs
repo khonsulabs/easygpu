@@ -1,8 +1,10 @@
 use std::ops::Deref;
 
 use crate::{
-    binding::Binding, binding::BindingGroup, binding::BindingGroupLayout, buffers::UniformBuffer,
-    device::Device, vertex::VertexFormat, vertex::VertexLayout,
+    binding::{Binding, BindingGroup, BindingGroupLayout},
+    buffers::UniformBuffer,
+    device::Device,
+    vertex::{VertexFormat, VertexLayout},
 };
 
 #[derive(Debug)]
@@ -104,7 +106,7 @@ pub struct PipelineCore {
 
 pub trait AbstractPipeline<'a>: Deref<Target = PipelineCore> {
     type PrepareContext;
-    type Uniforms: Copy + 'static;
+    type Uniforms: bytemuck::Pod + Copy + 'static;
 
     fn description() -> PipelineDescription<'a>;
     fn setup(pip: Pipeline, dev: &Device) -> Self;

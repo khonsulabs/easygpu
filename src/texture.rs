@@ -37,7 +37,7 @@ impl Texture {
         Self::fill(texture, body, device, encoder);
     }
 
-    pub fn fill<T: 'static>(
+    pub fn fill<T: bytemuck::Pod + 'static>(
         texture: &Texture,
         texels: &[T],
         device: &mut Device,
@@ -62,7 +62,7 @@ impl Texture {
         );
     }
 
-    pub fn transfer<T: 'static>(
+    pub fn transfer<T: bytemuck::Pod + 'static>(
         texture: &Texture,
         texels: &[T],
         rect: Rect<i32, ScreenSpace>,

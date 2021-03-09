@@ -31,8 +31,8 @@ impl Renderer {
     pub async fn new(surface: wgpu::Surface, instance: &wgpu::Instance) -> Result<Self, Error> {
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
-                power_preference: wgpu::PowerPreference::LowPower,
-                compatible_surface: None,
+                power_preference: wgpu::PowerPreference::default(),
+                compatible_surface: Some(&surface),
             })
             .await
             .ok_or(Error::NoAdaptersFound)?;
@@ -66,7 +66,7 @@ impl Renderer {
         self.device.create_zbuffer(size)
     }
 
-    pub fn vertex_buffer<T>(&self, verts: &[T]) -> VertexBuffer
+    pub fn vertex_buffer<T: bytemuck::Pod>(&self, verts: &[T]) -> VertexBuffer
     where
         T: 'static + Copy,
     {
@@ -75,7 +75,7 @@ impl Renderer {
 
     pub fn uniform_buffer<T>(&self, buf: &[T]) -> UniformBuffer
     where
-        T: 'static + Copy,
+        T: bytemuck::Pod + 'static + Copy,
     {
         self.device.create_uniform_buffer(buf)
     }
@@ -158,16 +158,13 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn update_pipeline<'a, T>(&mut self, pip: &'a T, p: T::PrepareContext, f: &mut Frame)
+    pub fn update_pipeline<'a, T>(&mut self, pip: &'a T, p: T::PrepareContext)
     where
         T: AbstractPipeline<'a>,
     {
         if let Some((buffer, uniforms)) = pip.prepare(p) {
-            self.device.update_uniform_buffer::<T::Uniforms>(
-                uniforms.as_slice(),
-                buffer,
-                &mut f.encoder,
-            );
+            self.device
+                .update_uniform_buffer::<T::Uniforms>(uniforms.as_slice(), buffer);
         }
     }
 

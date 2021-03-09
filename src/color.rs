@@ -1,5 +1,7 @@
+use bytemuck::{Pod, Zeroable};
+
 #[repr(C)]
-#[derive(Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Debug, Default)]
+#[derive(Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Debug, Default, Pod, Zeroable)]
 pub struct Rgba8 {
     pub r: u8,
     pub g: u8,
@@ -48,7 +50,7 @@ impl From<u32> for Rgba8 {
 
 /// A BGRA color with 8-bit channels, used when dealing with framebuffers.
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Default)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Default, Pod, Zeroable)]
 pub struct Bgra8 {
     pub b: u8,
     pub g: u8,

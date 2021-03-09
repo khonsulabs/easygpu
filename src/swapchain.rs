@@ -14,7 +14,7 @@ pub struct SwapChain {
 }
 
 impl SwapChain {
-    pub const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8UnormSrgb;
+    pub const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
 
     /// Returns the next texture to be presented by the swapchain for drawing.
     ///

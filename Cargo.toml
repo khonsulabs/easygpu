@@ -16,6 +16,7 @@ euclid = "0.22"
 wgpu = { version = "0.7.0" }
 num-traits = "0.2"
 thiserror = "1"
+bytemuck = { version = "1", features = ["derive"] }
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

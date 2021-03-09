@@ -10,7 +10,7 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::Size2D;
-use wgpu::{FilterMode, ShaderFlags, COPY_BUFFER_ALIGNMENT};
+use wgpu::{util::DeviceExt, FilterMode, ShaderFlags};
 
 #[derive(Debug)]
 pub struct Device {
@@ -217,7 +217,7 @@ impl Device {
         )
     }
 
-    pub fn create_buffer<T>(&self, vertices: &[T]) -> VertexBuffer
+    pub fn create_buffer<T: bytemuck::Pod>(&self, vertices: &[T]) -> VertexBuffer
     where
         T: 'static + Copy,
     {
@@ -229,17 +229,18 @@ impl Device {
 
     pub fn create_uniform_buffer<T>(&self, buf: &[T]) -> UniformBuffer
     where
-        T: 'static + Copy,
+        T: bytemuck::Pod + 'static + Copy,
     {
         UniformBuffer {
             size: std::mem::size_of::<T>(),
             count: buf.len(),
-            wgpu: self.create_buffer_from_slice(
-                buf,
-                wgpu::BufferUsage::UNIFORM
-                    | wgpu::BufferUsage::COPY_DST
-                    | wgpu::BufferUsage::COPY_SRC,
-            ),
+            wgpu: self
+                .wgpu
+                .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("Uniform Buffer"),
+                    contents: bytemuck::cast_slice(buf),
+                    usage: wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_DST,
+                }),
         }
     }
 
@@ -290,47 +291,26 @@ impl Device {
         BindingGroupLayout::new(index, layout, bindings.len())
     }
 
-    pub fn create_buffer_from_slice<T>(
+    pub fn create_buffer_from_slice<T: bytemuck::Pod>(
         &self,
         slice: &[T],
         usage: wgpu::BufferUsage,
     ) -> wgpu::Buffer {
-        let byte_length = slice.len() * std::mem::size_of::<T>();
-        let src = self.wgpu.create_buffer(&wgpu::BufferDescriptor {
-            label: None,
-            size: pad_byte_length_to_copy_alignment(byte_length),
-            mapped_at_creation: true,
-            usage,
-        });
-        let buf_slice = src.slice(0..(byte_length as wgpu::BufferAddress));
-        {
-            let mut range = buf_slice.get_mapped_range_mut();
-            let slice_ptr = slice.as_ptr().cast::<u8>();
-            let slice_as_u8 = unsafe { std::slice::from_raw_parts(slice_ptr, byte_length) };
-            range.copy_from_slice(slice_as_u8);
-        }
-        src.unmap();
-        src
+        self.wgpu
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: None,
+                contents: bytemuck::cast_slice(slice),
+                usage,
+            })
     }
 
-    pub fn update_uniform_buffer<T: Copy + 'static>(
+    pub fn update_uniform_buffer<T: bytemuck::Pod + Copy + 'static>(
         &self,
         slice: &[T],
         buf: &UniformBuffer,
-        encoder: &mut wgpu::CommandEncoder,
     ) {
-        let src = self.create_buffer_from_slice(
-            slice,
-            wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_SRC,
-        );
-
-        encoder.copy_buffer_to_buffer(
-            &src,
-            0,
-            &buf.wgpu,
-            0,
-            (std::mem::size_of::<T>() * slice.len()) as wgpu::BufferAddress,
-        );
+        self.queue
+            .write_buffer(&buf.wgpu, 0, bytemuck::cast_slice(slice));
     }
 
     pub fn submit<I: IntoIterator<Item = wgpu::CommandBuffer>>(&mut self, cmds: I) {
@@ -422,8 +402,4 @@ impl Device {
             wgpu,
         }
     }
-}
-
-fn pad_byte_length_to_copy_alignment(byte_length: usize) -> u64 {
-    (byte_length as u64 + COPY_BUFFER_ALIGNMENT - 1) / COPY_BUFFER_ALIGNMENT * COPY_BUFFER_ALIGNMENT
 }
