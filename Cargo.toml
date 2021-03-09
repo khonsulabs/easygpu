@@ -1,6 +1,6 @@
 [package]
 name = "easygpu"
-version = "0.0.5"
+version = "0.0.6"
 description = "Simple wrapper around wgpu aiming to make some common operations easier"
 repository = "https://github.com/khonsulabs/easygpu"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
