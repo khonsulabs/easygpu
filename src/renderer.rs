@@ -16,7 +16,6 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::{Rect, Size2D};
-use raw_window_handle::HasRawWindowHandle;
 use wgpu::FilterMode;
 
 pub trait Draw {
@@ -29,10 +28,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub async fn new<W: HasRawWindowHandle>(
-        instance: &wgpu::Instance,
-        window: &W,
-    ) -> Result<Self, Error> {
+    pub async fn new(surface: wgpu::Surface, instance: &wgpu::Instance) -> Result<Self, Error> {
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::LowPower,
@@ -42,7 +38,7 @@ impl Renderer {
             .ok_or(Error::NoAdaptersFound)?;
 
         Ok(Self {
-            device: Device::new(instance, &adapter, window).await?,
+            device: Device::new(surface, &adapter).await?,
         })
     }
 

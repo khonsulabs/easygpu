@@ -10,7 +10,6 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::Size2D;
-use raw_window_handle::HasRawWindowHandle;
 use wgpu::{FilterMode, ShaderFlags, COPY_BUFFER_ALIGNMENT};
 
 #[derive(Debug)]
@@ -21,12 +20,10 @@ pub struct Device {
 }
 
 impl Device {
-    pub async fn new<W: HasRawWindowHandle>(
-        instance: &wgpu::Instance,
+    pub async fn new(
+        surface: wgpu::Surface,
         adapter: &wgpu::Adapter,
-        window: &W,
     ) -> Result<Self, wgpu::RequestDeviceError> {
-        let surface = unsafe { instance.create_surface(window) };
         let (device, queue) = adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
