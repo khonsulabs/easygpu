@@ -15,8 +15,11 @@ all-features = true
 euclid = "0.22"
 wgpu = { version = "0.7.0" }
 num-traits = "0.2"
-raw-window-handle = { version = "0.3" }
 thiserror = "1"
+
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wgpu = { version = "0.7.0", default-features = false, features = ["webgl"] }
 
 [dev-dependencies]
 winit = "0.24"
