@@ -54,12 +54,16 @@ impl Renderer {
         }
     }
 
-    pub fn texture(&self, size: Size2D<u32, ScreenSpace>) -> Texture {
-        self.device.create_texture(size)
+    pub fn texture(&self, size: Size2D<u32, ScreenSpace>, format: wgpu::TextureFormat) -> Texture {
+        self.device.create_texture(size, format)
     }
 
-    pub fn framebuffer(&self, size: Size2D<u32, ScreenSpace>) -> Framebuffer {
-        self.device.create_framebuffer(size)
+    pub fn framebuffer(
+        &self,
+        size: Size2D<u32, ScreenSpace>,
+        format: wgpu::TextureFormat,
+    ) -> Framebuffer {
+        self.device.create_framebuffer(size, format)
     }
 
     pub fn zbuffer(&self, size: Size2D<u32, ScreenSpace>) -> DepthBuffer {
@@ -99,8 +103,14 @@ impl Renderer {
         let fs = self.device.create_shader(desc.fragment_shader);
 
         T::setup(
-            self.device
-                .create_pipeline(pip_layout, vertex_layout, blending, &vs, &fs),
+            self.device.create_pipeline(
+                pip_layout,
+                vertex_layout,
+                blending,
+                &vs,
+                &fs,
+                SwapChain::FORMAT,
+            ),
             &self.device,
         )
     }

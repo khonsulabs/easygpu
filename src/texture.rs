@@ -16,8 +16,6 @@ pub struct Texture {
 }
 
 impl Texture {
-    pub const COLOR_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8UnormSrgb;
-
     pub fn clear<T>(
         texture: &Texture,
         value: T,

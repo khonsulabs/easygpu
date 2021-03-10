@@ -10,7 +10,7 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::Size2D;
-use wgpu::{util::DeviceExt, FilterMode, ShaderFlags};
+use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat};
 
 #[derive(Debug)]
 pub struct Device {
@@ -101,8 +101,7 @@ impl Device {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None })
     }
 
-    pub fn create_texture(&self, size: Size2D<u32, ScreenSpace>) -> Texture {
-        let format = Texture::COLOR_FORMAT;
+    pub fn create_texture(&self, size: Size2D<u32, ScreenSpace>, format: TextureFormat) -> Texture {
         let texture_extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
@@ -128,8 +127,11 @@ impl Device {
         }
     }
 
-    pub fn create_framebuffer(&self, size: Size2D<u32, ScreenSpace>) -> Framebuffer {
-        let format = SwapChain::FORMAT;
+    pub fn create_framebuffer(
+        &self,
+        size: Size2D<u32, ScreenSpace>,
+        format: TextureFormat,
+    ) -> Framebuffer {
         let extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
@@ -324,6 +326,7 @@ impl Device {
         blending: Blending,
         vs: &Shader,
         fs: &Shader,
+        swapchain_format: TextureFormat,
     ) -> Pipeline {
         let vertex_attrs = vertex_layout.to_wgpu();
 
@@ -380,7 +383,7 @@ impl Device {
                     module: &fs.wgpu,
                     entry_point: "main",
                     targets: &[wgpu::ColorTargetState {
-                        format: SwapChain::FORMAT,
+                        format: swapchain_format,
                         color_blend: wgpu::BlendState {
                             src_factor,
                             dst_factor,
