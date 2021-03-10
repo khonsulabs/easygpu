@@ -59,8 +59,9 @@ impl Device {
         &self,
         size: Size2D<u32, ScreenSpace>,
         mode: PM,
+        format: TextureFormat,
     ) -> wgpu::SwapChain {
-        let desc = SwapChain::descriptor(size, mode);
+        let desc = SwapChain::descriptor(size, mode, format);
         self.wgpu.create_swap_chain(&self.surface, &desc)
     }
 

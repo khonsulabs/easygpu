@@ -16,7 +16,7 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::{Rect, Size2D};
-use wgpu::FilterMode;
+use wgpu::{FilterMode, TextureFormat};
 
 pub trait Draw {
     fn draw<'a, 'b>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>);
@@ -46,11 +46,13 @@ impl Renderer {
         &self,
         size: Size2D<u32, ScreenSpace>,
         mode: PresentMode,
+        format: TextureFormat,
     ) -> SwapChain {
         SwapChain {
             depth: self.device.create_zbuffer(size),
-            wgpu: self.device.create_swap_chain(size, mode),
+            wgpu: self.device.create_swap_chain(size, mode, format),
             size,
+            format,
         }
     }
 
@@ -92,7 +94,7 @@ impl Renderer {
         self.device.create_sampler(min_filter, mag_filter)
     }
 
-    pub fn pipeline<T>(&self, blending: Blending) -> T
+    pub fn pipeline<T>(&self, blending: Blending, format: TextureFormat) -> T
     where
         T: AbstractPipeline<'static>,
     {
@@ -103,14 +105,8 @@ impl Renderer {
         let fs = self.device.create_shader(desc.fragment_shader);
 
         T::setup(
-            self.device.create_pipeline(
-                pip_layout,
-                vertex_layout,
-                blending,
-                &vs,
-                &fs,
-                SwapChain::FORMAT,
-            ),
+            self.device
+                .create_pipeline(pip_layout, vertex_layout, blending, &vs, &fs, format),
             &self.device,
         )
     }

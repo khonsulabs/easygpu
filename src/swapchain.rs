@@ -1,4 +1,5 @@
 use euclid::Size2D;
+use wgpu::TextureFormat;
 
 use crate::{buffers::DepthBuffer, renderer::RenderTarget, transform::ScreenSpace};
 
@@ -11,11 +12,10 @@ pub struct SwapChain {
     pub wgpu: wgpu::SwapChain,
     pub depth: DepthBuffer,
     pub size: Size2D<u32, ScreenSpace>,
+    pub format: TextureFormat,
 }
 
 impl SwapChain {
-    pub const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
-
     /// Returns the next texture to be presented by the swapchain for drawing.
     ///
     /// When the [`SwapChainTexture`] returned by this method is dropped, the
@@ -30,16 +30,17 @@ impl SwapChain {
 
     /// Get the texture format in use
     pub fn format(&self) -> wgpu::TextureFormat {
-        Self::FORMAT
+        self.format
     }
 
     pub fn descriptor<PresentMode: Into<wgpu::PresentMode>>(
         size: Size2D<u32, ScreenSpace>,
         mode: PresentMode,
+        format: TextureFormat,
     ) -> wgpu::SwapChainDescriptor {
         wgpu::SwapChainDescriptor {
             usage: wgpu::TextureUsage::RENDER_ATTACHMENT,
-            format: Self::FORMAT,
+            format,
             present_mode: mode.into(),
             width: size.width,
             height: size.height,
