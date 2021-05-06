@@ -92,17 +92,6 @@ impl From<Rgba8> for Bgra8 {
     }
 }
 
-impl Into<Rgba8> for Bgra8 {
-    fn into(self) -> Rgba8 {
-        Rgba8 {
-            r: self.r,
-            g: self.g,
-            b: self.b,
-            a: self.a,
-        }
-    }
-}
-
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct Rgba {
@@ -120,6 +109,17 @@ impl Rgba {
     }
 }
 
+impl From<Bgra8> for Rgba8 {
+    fn from(bgra: Bgra8) -> Rgba8 {
+        Rgba8 {
+            r: bgra.r,
+            g: bgra.g,
+            b: bgra.b,
+            a: bgra.a,
+        }
+    }
+}
+
 impl From<Rgba8> for Rgba {
     fn from(rgba8: Rgba8) -> Self {
         Self {
@@ -131,13 +131,13 @@ impl From<Rgba8> for Rgba {
     }
 }
 
-impl Into<wgpu::Color> for Rgba {
-    fn into(self) -> wgpu::Color {
+impl From<Rgba> for wgpu::Color {
+    fn from(rgba: Rgba) -> wgpu::Color {
         wgpu::Color {
-            r: self.r as f64,
-            g: self.g as f64,
-            b: self.b as f64,
-            a: self.a as f64,
+            r: rgba.r as f64,
+            g: rgba.g as f64,
+            b: rgba.b as f64,
+            a: rgba.a as f64,
         }
     }
 }

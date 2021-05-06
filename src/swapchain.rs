@@ -72,9 +72,9 @@ pub enum PresentMode {
     NoVsync,
 }
 
-impl Into<wgpu::PresentMode> for PresentMode {
-    fn into(self) -> wgpu::PresentMode {
-        match self {
+impl From<PresentMode> for wgpu::PresentMode {
+    fn from(present_mode: PresentMode) -> wgpu::PresentMode {
+        match present_mode {
             PresentMode::Vsync => wgpu::PresentMode::Mailbox,
             PresentMode::NoVsync => wgpu::PresentMode::Immediate,
         }
