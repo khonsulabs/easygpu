@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{num::NonZeroU32, ops::Range};
 
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
@@ -126,18 +126,18 @@ impl Renderer {
         });
 
         encoder.copy_texture_to_buffer(
-            wgpu::TextureCopyView {
+            wgpu::ImageCopyTexture {
                 texture: &fb.texture.wgpu,
                 mip_level: 0,
                 origin: wgpu::Origin3d { x: 0, y: 0, z: 0 },
             },
-            wgpu::BufferCopyView {
+            wgpu::ImageCopyBuffer {
                 buffer: &gpu_buffer,
-                layout: wgpu::TextureDataLayout {
+                layout: wgpu::ImageDataLayout {
                     offset: 0,
                     // TODO: Must be a multiple of 256
-                    bytes_per_row: 4 * fb.texture.size.width,
-                    rows_per_image: fb.texture.size.height,
+                    bytes_per_row: NonZeroU32::new(4 * fb.texture.size.width),
+                    rows_per_image: NonZeroU32::new(fb.texture.size.height),
                 },
             },
             fb.texture.extent,
@@ -260,16 +260,16 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
     ) -> Self {
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: None,
-            color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-                attachment: &view,
+            color_attachments: &[wgpu::RenderPassColorAttachment {
+                view: &view,
                 resolve_target: None,
                 ops: wgpu::Operations {
                     load: op.to_wgpu(),
                     store: true,
                 },
             }],
-            depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-                attachment: depth,
+            depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                view: depth,
                 depth_ops: Some(wgpu::Operations {
                     load: wgpu::LoadOp::Clear(1.),
                     store: true,

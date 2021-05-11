@@ -20,11 +20,11 @@ impl VertexFormat {
 
     const fn to_wgpu(self) -> wgpu::VertexFormat {
         match self {
-            VertexFormat::Float => wgpu::VertexFormat::Float,
-            VertexFormat::Float2 => wgpu::VertexFormat::Float2,
-            VertexFormat::Float3 => wgpu::VertexFormat::Float3,
-            VertexFormat::Float4 => wgpu::VertexFormat::Float4,
-            VertexFormat::UByte4 => wgpu::VertexFormat::Uchar4Norm,
+            VertexFormat::Float => wgpu::VertexFormat::Float32,
+            VertexFormat::Float2 => wgpu::VertexFormat::Float32x2,
+            VertexFormat::Float3 => wgpu::VertexFormat::Float32x3,
+            VertexFormat::Float4 => wgpu::VertexFormat::Float32x4,
+            VertexFormat::UByte4 => wgpu::VertexFormat::Unorm8x4,
         }
     }
 }

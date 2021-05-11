@@ -106,7 +106,7 @@ impl Device {
         let texture_extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
-            depth: 1,
+            depth_or_array_layers: 1,
         };
         let texture = self.wgpu.create_texture(&wgpu::TextureDescriptor {
             size: texture_extent,
@@ -136,7 +136,7 @@ impl Device {
         let extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
-            depth: 1,
+            depth_or_array_layers: 1,
         };
         let texture = self.wgpu.create_texture(&wgpu::TextureDescriptor {
             size: extent,
@@ -169,7 +169,7 @@ impl Device {
         let extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
-            depth: 1,
+            depth_or_array_layers: 1,
         };
         let wgpu = self.wgpu.create_texture(&wgpu::TextureDescriptor {
             size: extent,
@@ -359,8 +359,10 @@ impl Device {
                     topology: wgpu::PrimitiveTopology::TriangleList,
                     strip_index_format: None,
                     front_face: wgpu::FrontFace::Ccw,
-                    cull_mode: wgpu::CullMode::None,
+                    cull_mode: None,
                     polygon_mode: wgpu::PolygonMode::Fill,
+                    clamp_depth: false,
+                    conservative: false,
                 },
                 depth_stencil: Some(wgpu::DepthStencilState {
                     format: DepthBuffer::FORMAT,
@@ -377,7 +379,6 @@ impl Device {
                         slope_scale: 0.,
                         clamp: 0.,
                     },
-                    clamp_depth: false,
                 }),
                 multisample: wgpu::MultisampleState::default(),
                 fragment: Some(wgpu::FragmentState {
@@ -385,16 +386,19 @@ impl Device {
                     entry_point: "main",
                     targets: &[wgpu::ColorTargetState {
                         format: swapchain_format,
-                        color_blend: wgpu::BlendState {
-                            src_factor,
-                            dst_factor,
-                            operation,
-                        },
-                        alpha_blend: wgpu::BlendState {
-                            src_factor,
-                            dst_factor,
-                            operation,
-                        },
+                        blend: Some(wgpu::BlendState {
+                            color: wgpu::BlendComponent {
+                                src_factor,
+                                dst_factor,
+                                operation,
+                            },
+                            alpha: wgpu::BlendComponent {
+                                src_factor,
+                                dst_factor,
+                                operation,
+                            },
+                        }),
+
                         write_mask: wgpu::ColorWrite::ALL,
                     }],
                 }),

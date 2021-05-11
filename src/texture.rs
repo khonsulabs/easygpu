@@ -1,3 +1,5 @@
+use std::num::NonZeroU32;
+
 use euclid::{Box2D, Point2D, Rect, Size2D};
 
 use crate::{
@@ -109,7 +111,7 @@ impl Texture {
         let extent = wgpu::Extent3d {
             width: destination_size.width,
             height: destination_size.height,
-            depth: 1,
+            depth_or_array_layers: 1,
         };
         Self::copy(
             &texture.wgpu,
@@ -133,7 +135,7 @@ impl Texture {
         );
 
         encoder.copy_texture_to_texture(
-            wgpu::TextureCopyView {
+            wgpu::ImageCopyTexture {
                 texture: &self.wgpu,
                 mip_level: 0,
                 origin: wgpu::Origin3d {
@@ -142,7 +144,7 @@ impl Texture {
                     z: 0,
                 },
             },
-            wgpu::TextureCopyView {
+            wgpu::ImageCopyTexture {
                 texture: &self.wgpu,
                 mip_level: 0,
                 origin: wgpu::Origin3d {
@@ -154,7 +156,7 @@ impl Texture {
             wgpu::Extent3d {
                 width: src.width() as u32,
                 height: src.height() as u32,
-                depth: 1,
+                depth_or_array_layers: 1,
             },
         );
     }
@@ -168,15 +170,15 @@ impl Texture {
         encoder: &mut wgpu::CommandEncoder,
     ) {
         encoder.copy_buffer_to_texture(
-            wgpu::BufferCopyView {
+            wgpu::ImageCopyBuffer {
                 buffer,
-                layout: wgpu::TextureDataLayout {
+                layout: wgpu::ImageDataLayout {
                     offset: 0,
-                    bytes_per_row,
-                    rows_per_image: destination.size.height,
+                    bytes_per_row: NonZeroU32::new(bytes_per_row),
+                    rows_per_image: NonZeroU32::new(destination.size.height),
                 },
             },
-            wgpu::TextureCopyView {
+            wgpu::ImageCopyTexture {
                 texture,
                 mip_level: 0,
                 origin: wgpu::Origin3d {
