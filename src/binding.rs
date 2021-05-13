@@ -65,7 +65,7 @@ impl BindingType {
             },
             BindingType::Sampler => wgpu::BindingType::Sampler {
                 comparison: true,
-                filtering: false,
+                filtering: true,
             },
         }
     }
