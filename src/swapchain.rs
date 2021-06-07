@@ -6,8 +6,8 @@ use crate::{buffers::DepthBuffer, renderer::RenderTarget, transform::ScreenSpace
 /// A handle to a swap chain.
 ///
 /// A `SwapChain` represents the image or series of images that will be
-/// presented to a [`Renderer`]. A `SwapChain` may be created with
-/// [`Renderer::swap_chain`].
+/// presented to a [`Renderer`](crate::renderer::Renderer). A `SwapChain` may be
+/// created with [`Renderer::swap_chain`](crate::renderer::Renderer).
 #[derive(Debug)]
 pub struct SwapChain {
     pub wgpu: wgpu::SwapChain,
@@ -20,7 +20,8 @@ impl SwapChain {
     /// Returns the next texture to be presented by the swapchain for drawing.
     ///
     /// When the [`SwapChainTexture`] returned by this method is dropped, the
-    /// swapchain will present the texture to the associated [`Renderer`].
+    /// swapchain will present the texture to the associated
+    /// [`Renderer`](crate::renderer::Renderer).
     pub fn next_texture(&mut self) -> Result<SwapChainTexture, wgpu::SwapChainError> {
         Ok(SwapChainTexture {
             depth: &self.depth,
