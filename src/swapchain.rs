@@ -5,8 +5,9 @@ use crate::{buffers::DepthBuffer, renderer::RenderTarget, transform::ScreenSpace
 
 /// A handle to a swap chain.
 ///
-/// A `SwapChain` represents the image or series of images that will be presented to a [`Renderer`].
-/// A `SwapChain` may be created with [`Renderer::swap_chain`].
+/// A `SwapChain` represents the image or series of images that will be
+/// presented to a [`Renderer`]. A `SwapChain` may be created with
+/// [`Renderer::swap_chain`].
 #[derive(Debug)]
 pub struct SwapChain {
     pub wgpu: wgpu::SwapChain,

@@ -1,3 +1,6 @@
+use euclid::Size2D;
+use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat, TextureUsage};
+
 use crate::{
     binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
     buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
@@ -9,8 +12,6 @@ use crate::{
     transform::ScreenSpace,
     vertex::VertexLayout,
 };
-use euclid::Size2D;
-use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat, TextureUsage};
 
 #[derive(Debug)]
 pub struct Device {

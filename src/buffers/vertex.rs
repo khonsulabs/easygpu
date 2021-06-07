@@ -1,4 +1,7 @@
-use crate::{prelude::BindingGroup, renderer::Draw, renderer::RenderPassExt};
+use crate::{
+    prelude::BindingGroup,
+    renderer::{Draw, RenderPassExt},
+};
 
 #[derive(Debug)]
 pub struct VertexBuffer {

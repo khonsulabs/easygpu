@@ -1,5 +1,8 @@
 use std::{num::NonZeroU32, ops::Range};
 
+use euclid::{Rect, Size2D};
+use wgpu::{FilterMode, TextureFormat};
+
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
     buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
@@ -15,8 +18,6 @@ use crate::{
     transform::ScreenSpace,
     vertex::VertexLayout,
 };
-use euclid::{Rect, Size2D};
-use wgpu::{FilterMode, TextureFormat};
 
 pub trait Draw {
     fn draw<'a, 'b>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>);
@@ -319,14 +320,17 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
     fn easy_draw<T: Draw>(&mut self, drawable: &'a T, binding: &'a BindingGroup) {
         drawable.draw(binding, self);
     }
+
     fn draw_buffer(&mut self, buf: &'a VertexBuffer) {
         self.set_easy_vertex_buffer(buf);
         self.draw(0..buf.size, 0..1);
     }
+
     fn draw_buffer_range(&mut self, buf: &'a VertexBuffer, range: Range<u32>) {
         self.set_easy_vertex_buffer(buf);
         self.draw(range, 0..1);
     }
+
     fn draw_indexed(&mut self, indices: Range<u32>, instances: Range<u32>) {
         self.draw_indexed(indices, 0, instances)
     }

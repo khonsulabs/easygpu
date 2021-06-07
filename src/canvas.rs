@@ -1,5 +1,6 @@
-use crate::{device::Device, transform::ScreenSpace};
 use euclid::Rect;
+
+use crate::{device::Device, transform::ScreenSpace};
 
 pub trait Canvas {
     type Color;
