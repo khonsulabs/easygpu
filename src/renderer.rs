@@ -28,7 +28,10 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub async fn new(surface: wgpu::Surface, instance: &wgpu::Instance) -> Result<Self, Error> {
+    pub async fn for_surface(
+        surface: wgpu::Surface,
+        instance: &wgpu::Instance,
+    ) -> Result<Self, Error> {
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::default(),
@@ -38,7 +41,13 @@ impl Renderer {
             .ok_or(Error::NoAdaptersFound)?;
 
         Ok(Self {
-            device: Device::new(surface, &adapter).await?,
+            device: Device::for_surface(surface, &adapter).await?,
+        })
+    }
+
+    pub async fn offscreen(adapter: &wgpu::Adapter) -> Result<Self, Error> {
+        Ok(Self {
+            device: Device::offscreen(&adapter).await?,
         })
     }
 
@@ -56,8 +65,13 @@ impl Renderer {
         }
     }
 
-    pub fn texture(&self, size: Size2D<u32, ScreenSpace>, format: wgpu::TextureFormat) -> Texture {
-        self.device.create_texture(size, format)
+    pub fn texture(
+        &self,
+        size: Size2D<u32, ScreenSpace>,
+        format: wgpu::TextureFormat,
+        usage: wgpu::TextureUsage,
+    ) -> Texture {
+        self.device.create_texture(size, format, usage)
     }
 
     pub fn framebuffer(

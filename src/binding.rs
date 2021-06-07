@@ -9,7 +9,7 @@ pub struct BindingGroup {
 
 impl BindingGroup {
     pub fn new(set_index: u32, wgpu: wgpu::BindGroup) -> Self {
-        Self { set_index, wgpu }
+        Self { wgpu, set_index }
     }
 }
 

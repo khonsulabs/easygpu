@@ -10,17 +10,17 @@ use crate::{
     vertex::VertexLayout,
 };
 use euclid::Size2D;
-use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat};
+use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat, TextureUsage};
 
 #[derive(Debug)]
 pub struct Device {
     pub wgpu: wgpu::Device,
     pub queue: wgpu::Queue,
-    pub surface: wgpu::Surface,
+    pub surface: Option<wgpu::Surface>,
 }
 
 impl Device {
-    pub async fn new(
+    pub async fn for_surface(
         surface: wgpu::Surface,
         adapter: &wgpu::Adapter,
     ) -> Result<Self, wgpu::RequestDeviceError> {
@@ -38,7 +38,26 @@ impl Device {
         Ok(Self {
             wgpu: device,
             queue,
-            surface,
+            surface: Some(surface),
+        })
+    }
+
+    pub async fn offscreen(adapter: &wgpu::Adapter) -> Result<Self, wgpu::RequestDeviceError> {
+        let (device, queue) = adapter
+            .request_device(
+                &wgpu::DeviceDescriptor {
+                    features: wgpu::Features::empty(),
+                    limits: wgpu::Limits::default(),
+                    label: None,
+                },
+                None,
+            )
+            .await?;
+
+        Ok(Self {
+            wgpu: device,
+            queue,
+            surface: None,
         })
     }
 
@@ -62,7 +81,12 @@ impl Device {
         format: TextureFormat,
     ) -> wgpu::SwapChain {
         let desc = SwapChain::descriptor(size, mode, format);
-        self.wgpu.create_swap_chain(&self.surface, &desc)
+        self.wgpu.create_swap_chain(
+            self.surface
+                .as_ref()
+                .expect("create_swap_chain only works when initalized with a wgpu::Surface"),
+            &desc,
+        )
     }
 
     pub fn create_pipeline_layout(&self, ss: &[Set]) -> PipelineLayout {
@@ -102,7 +126,12 @@ impl Device {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None })
     }
 
-    pub fn create_texture(&self, size: Size2D<u32, ScreenSpace>, format: TextureFormat) -> Texture {
+    pub fn create_texture(
+        &self,
+        size: Size2D<u32, ScreenSpace>,
+        format: TextureFormat,
+        usage: TextureUsage,
+    ) -> Texture {
         let texture_extent = wgpu::Extent3d {
             width: size.width,
             height: size.height,
@@ -114,7 +143,7 @@ impl Device {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsage::SAMPLED | wgpu::TextureUsage::COPY_DST,
+            usage,
             label: None,
         });
         let texture_view = texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -144,10 +173,10 @@ impl Device {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsage::SAMPLED
-                | wgpu::TextureUsage::COPY_DST
-                | wgpu::TextureUsage::COPY_SRC
-                | wgpu::TextureUsage::RENDER_ATTACHMENT,
+            usage: TextureUsage::SAMPLED
+                | TextureUsage::COPY_DST
+                | TextureUsage::COPY_SRC
+                | TextureUsage::RENDER_ATTACHMENT,
             label: None,
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -178,15 +207,15 @@ impl Device {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsage::COPY_DST | wgpu::TextureUsage::RENDER_ATTACHMENT,
+            usage: TextureUsage::COPY_DST | TextureUsage::RENDER_ATTACHMENT,
         });
         let view = wgpu.create_view(&wgpu::TextureViewDescriptor::default());
 
         DepthBuffer {
             texture: Texture {
                 wgpu,
-                extent,
                 view,
+                extent,
                 format,
                 size,
             },
