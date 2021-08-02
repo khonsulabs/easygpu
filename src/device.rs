@@ -373,7 +373,7 @@ impl Device {
                 push_constant_ranges: &[],
             });
 
-        let (src_factor, dst_factor, operation) = blending.to_wgpu();
+        let (src_factor, dst_factor, operation) = blending.as_wgpu();
 
         let wgpu = self
             .wgpu

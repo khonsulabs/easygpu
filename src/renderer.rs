@@ -48,7 +48,7 @@ impl Renderer {
 
     pub async fn offscreen(adapter: &wgpu::Adapter) -> Result<Self, Error> {
         Ok(Self {
-            device: Device::offscreen(&adapter).await?,
+            device: Device::offscreen(adapter).await?,
         })
     }
 
@@ -276,7 +276,7 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: None,
             color_attachments: &[wgpu::RenderPassColorAttachment {
-                view: &view,
+                view,
                 resolve_target: None,
                 ops: wgpu::Operations {
                     load: op.to_wgpu(),

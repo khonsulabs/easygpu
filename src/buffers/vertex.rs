@@ -18,7 +18,7 @@ impl Draw for VertexBuffer {
         // so that we can check at creation time whether the data passed in matches
         // the format.
         pass.set_binding(binding, &[]);
-        pass.draw_buffer(&self);
+        pass.draw_buffer(self);
     }
 }
 

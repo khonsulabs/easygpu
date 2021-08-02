@@ -205,11 +205,11 @@ impl Canvas for Texture {
     type Color = Rgba8;
 
     fn fill(&self, buf: &[Rgba8], device: &mut Device, encoder: &mut wgpu::CommandEncoder) {
-        Texture::fill(&self, buf, device, encoder);
+        Texture::fill(self, buf, device, encoder);
     }
 
     fn clear(&self, color: Rgba8, device: &mut Device, encoder: &mut wgpu::CommandEncoder) {
-        Texture::clear(&self, color, device, encoder);
+        Texture::clear(self, color, device, encoder);
     }
 
     fn transfer(
@@ -219,7 +219,7 @@ impl Canvas for Texture {
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) {
-        Texture::transfer(&self, buf, rect, device, encoder);
+        Texture::transfer(self, buf, rect, device, encoder);
     }
 
     fn blit(
@@ -228,7 +228,7 @@ impl Canvas for Texture {
         dst: Rect<u32, ScreenSpace>,
         encoder: &mut wgpu::CommandEncoder,
     ) {
-        Texture::blit(&self, src, dst, encoder);
+        Texture::blit(self, src, dst, encoder);
     }
 }
 

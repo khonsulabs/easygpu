@@ -20,8 +20,8 @@ impl Frame {
     ) -> wgpu::RenderPass<'a> {
         wgpu::RenderPass::begin(
             &mut self.encoder,
-            &view.color_target(),
-            &view.zdepth_target(),
+            view.color_target(),
+            view.zdepth_target(),
             op,
         )
     }

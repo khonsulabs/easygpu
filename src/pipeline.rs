@@ -39,11 +39,11 @@ impl Blending {
         }
     }
 
-    pub fn to_wgpu(&self) -> (wgpu::BlendFactor, wgpu::BlendFactor, wgpu::BlendOperation) {
+    pub fn as_wgpu(&self) -> (wgpu::BlendFactor, wgpu::BlendFactor, wgpu::BlendOperation) {
         (
-            self.src_factor.to_wgpu(),
-            self.dst_factor.to_wgpu(),
-            self.operation.to_wgpu(),
+            self.src_factor.as_wgpu(),
+            self.dst_factor.as_wgpu(),
+            self.operation.as_wgpu(),
         )
     }
 }
@@ -67,7 +67,7 @@ pub enum BlendFactor {
 }
 
 impl BlendFactor {
-    fn to_wgpu(&self) -> wgpu::BlendFactor {
+    fn as_wgpu(&self) -> wgpu::BlendFactor {
         match self {
             BlendFactor::SrcAlpha => wgpu::BlendFactor::SrcAlpha,
             BlendFactor::OneMinusSrcAlpha => wgpu::BlendFactor::OneMinusSrcAlpha,
@@ -83,7 +83,7 @@ pub enum BlendOp {
 }
 
 impl BlendOp {
-    fn to_wgpu(&self) -> wgpu::BlendOperation {
+    fn as_wgpu(&self) -> wgpu::BlendOperation {
         match self {
             BlendOp::Add => wgpu::BlendOperation::Add,
         }
