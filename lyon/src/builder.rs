@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::shape::{Shape, Vertex};
-use easygpu::{color::Rgba, euclid::Vector3D, renderer::Renderer, transform::ScreenSpace};
+use easygpu::{color::Rgba, renderer::Renderer};
 use lyon_tessellation::{
     math::Point, path::Path, FillOptions, FillTessellator, GeometryBuilderError, StrokeOptions,
     StrokeTessellator, TessellationError, VertexId,
@@ -83,7 +83,7 @@ impl ShapeBuilder {
                 a: attributes[3],
             }
             .into(),
-            position: Vector3D::<f32, ScreenSpace>::new(point.x, point.y, self.zdepth).to_array(),
+            position: [point.x, point.y, self.zdepth],
         }
     }
 

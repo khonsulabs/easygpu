@@ -1,4 +1,4 @@
-use easygpu::{euclid::Size2D, prelude::*};
+use easygpu::{figures::Size, prelude::*};
 use easygpu_lyon::{LyonPipeline, Srgb, VertexShaderSource};
 use winit::{
     event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent},
@@ -23,7 +23,7 @@ pub trait Sandbox: Sized + 'static {
         let sandbox = Self::create(&renderer);
 
         let mut textures = renderer.swap_chain(
-            Size2D::new(size.width, size.height).cast::<u32>(),
+            Size::new(size.width, size.height).cast::<u32>(),
             PresentMode::default(),
             Srgb::sampler_format(),
         );
@@ -35,7 +35,7 @@ pub trait Sandbox: Sized + 'static {
                 }
                 WindowEvent::Resized(size) => {
                     textures = renderer.swap_chain(
-                        Size2D::new(size.width, size.height).cast::<u32>(),
+                        Size::new(size.width, size.height).cast::<u32>(),
                         PresentMode::default(),
                         Srgb::sampler_format(),
                     );
@@ -62,9 +62,9 @@ pub trait Sandbox: Sized + 'static {
                         sandbox.pipeline(),
                         ScreenTransformation::ortho(
                             0.,
+                            0.,
                             output.size.width as f32,
                             output.size.height as f32,
-                            0.,
                             -1.,
                             1.,
                         ),
