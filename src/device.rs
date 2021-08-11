@@ -1,4 +1,4 @@
-use euclid::Size2D;
+use figures::Size;
 use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat, TextureUsage};
 
 use crate::{
@@ -77,7 +77,7 @@ impl Device {
 
     pub fn create_swap_chain<PM: Into<wgpu::PresentMode>>(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         mode: PM,
         format: TextureFormat,
     ) -> wgpu::SwapChain {
@@ -129,7 +129,7 @@ impl Device {
 
     pub fn create_texture(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         format: TextureFormat,
         usage: TextureUsage,
     ) -> Texture {
@@ -160,7 +160,7 @@ impl Device {
 
     pub fn create_framebuffer(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         format: TextureFormat,
     ) -> Framebuffer {
         let extent = wgpu::Extent3d {
@@ -194,7 +194,7 @@ impl Device {
         }
     }
 
-    pub fn create_zbuffer(&self, size: Size2D<u32, ScreenSpace>) -> DepthBuffer {
+    pub fn create_zbuffer(&self, size: Size<u32, ScreenSpace>) -> DepthBuffer {
         let format = DepthBuffer::FORMAT;
         let extent = wgpu::Extent3d {
             width: size.width,

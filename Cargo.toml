@@ -12,7 +12,7 @@ keywords = ["graphics", "wgpu"]
 all-features = true
 
 [dependencies]
-euclid = "0.22"
+figures = "0.1.0-dev.0"
 wgpu = { version="0.9" }
 num-traits = "0.2"
 thiserror = "1"
@@ -25,3 +25,6 @@ wgpu = { version="0.9", default-features=false, features=["webgl"] }
 [dev-dependencies]
 winit = "0.25"
 futures = "0.3"
+
+[patch.crates-io]
+figures = { git="https://github.com/khonsulabs/figures.git", branch="main", version="0.1.0-dev.0" }

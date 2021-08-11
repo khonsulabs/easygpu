@@ -17,13 +17,13 @@ pub mod texture;
 pub mod transform;
 pub mod vertex;
 
-pub use euclid;
+pub use figures;
 pub use wgpu;
 
 pub mod prelude {
     pub use super::{
-        binding::*, buffers::*, canvas::*, color::*, device::*, error::*, euclid, frame::*,
-        pipeline::*, renderable::*, renderer::*, sampler::*, shader::*, swapchain::*, texture::*,
-        transform::*, vertex::*, wgpu,
+        binding::*, buffers::*, canvas::*, color::*, device::*, error::*, frame::*, pipeline::*,
+        renderable::*, renderer::*, sampler::*, shader::*, swapchain::*, texture::*, transform::*,
+        vertex::*, wgpu,
     };
 }
