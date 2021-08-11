@@ -2,9 +2,10 @@ use std::ops::{Add, Div, Neg, Sub};
 
 use num_traits::{One, Zero};
 
-pub struct ScreenSpace;
-pub struct WorldSpace;
+pub type ScreenSpace = figures::Pixels;
+pub type WorldSpace = figures::Scaled;
 
+#[derive(Clone, Copy, Debug)]
 pub struct ScreenTransformation<S>([S; 16]);
 
 impl<S> ScreenTransformation<S>
