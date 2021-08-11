@@ -1,0 +1,20 @@
+[package]
+name = "easygpu-lyon"
+version = "0.0.12"
+authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
+edition = "2018"
+description = "A 2d graphics pipeline for easygpu utilizing lyon"
+readme = "./README.md"
+license = "MIT"
+keywords = ["easygpu", "lyon", "2d", "graphics"]
+categories = ["graphics"]
+repository = "https://github.com/khonsulabs/easygpu-lyon"
+
+[dependencies]
+easygpu = { version = "0.0.12", path = "../easygpu" }
+lyon_tessellation = "0.16"
+bytemuck = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+winit = "0.25"
+futures = "0.3"
