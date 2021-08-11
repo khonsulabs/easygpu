@@ -25,6 +25,3 @@ wgpu = { version = "0.9", default-features = false, features = ["webgl"] }
 [dev-dependencies]
 winit = "0.25"
 futures = "0.3"
-
-[patch.crates-io]
-figures = { path = "../figures/figures" }
