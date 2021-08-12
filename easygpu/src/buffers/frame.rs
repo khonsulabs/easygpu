@@ -1,4 +1,4 @@
-use euclid::Rect;
+use figures::SizedRect;
 
 use crate::{
     binding::Bind, buffers::DepthBuffer, canvas::Canvas, color::Bgra8, device::Device,
@@ -14,7 +14,7 @@ pub struct Framebuffer {
 impl Framebuffer {
     /// Size in pixels of the framebuffer.
     pub fn size(&self) -> usize {
-        self.texture.size.cast::<usize>().area()
+        self.texture.size.cast::<usize>().area().get()
     }
 
     /// Framebuffer width, in pixels.
@@ -62,7 +62,7 @@ impl Canvas for Framebuffer {
     fn transfer(
         &self,
         buf: &[Self::Color],
-        rect: Rect<i32, ScreenSpace>,
+        rect: SizedRect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) {
@@ -71,8 +71,8 @@ impl Canvas for Framebuffer {
 
     fn blit(
         &self,
-        from: Rect<u32, ScreenSpace>,
-        dst: Rect<u32, ScreenSpace>,
+        from: SizedRect<u32, ScreenSpace>,
+        dst: SizedRect<u32, ScreenSpace>,
         encoder: &mut wgpu::CommandEncoder,
     ) {
         Texture::blit(&self.texture, from, dst, encoder);

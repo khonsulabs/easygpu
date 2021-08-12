@@ -1,6 +1,6 @@
 use std::{num::NonZeroU32, ops::Range};
 
-use euclid::{Rect, Size2D};
+use figures::{Size, SizedRect};
 use wgpu::{FilterMode, TextureFormat};
 
 use crate::{
@@ -54,7 +54,7 @@ impl Renderer {
 
     pub fn swap_chain<PresentMode: Into<wgpu::PresentMode>>(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         mode: PresentMode,
         format: TextureFormat,
     ) -> SwapChain {
@@ -68,7 +68,7 @@ impl Renderer {
 
     pub fn texture(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         format: wgpu::TextureFormat,
         usage: wgpu::TextureUsage,
     ) -> Texture {
@@ -77,13 +77,13 @@ impl Renderer {
 
     pub fn framebuffer(
         &self,
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         format: wgpu::TextureFormat,
     ) -> Framebuffer {
         self.device.create_framebuffer(size, format)
     }
 
-    pub fn zbuffer(&self, size: Size2D<u32, ScreenSpace>) -> DepthBuffer {
+    pub fn zbuffer(&self, size: Size<u32, ScreenSpace>) -> DepthBuffer {
         self.device.create_zbuffer(size)
     }
 
@@ -213,12 +213,12 @@ pub enum Op<'a, T> {
     Transfer {
         f: &'a dyn Canvas<Color = T>,
         buf: &'a [T],
-        rect: Rect<i32, ScreenSpace>,
+        rect: SizedRect<i32, ScreenSpace>,
     },
     Blit(
         &'a dyn Canvas<Color = T>,
-        Rect<u32, ScreenSpace>,
-        Rect<u32, ScreenSpace>,
+        SizedRect<u32, ScreenSpace>,
+        SizedRect<u32, ScreenSpace>,
     ),
 }
 

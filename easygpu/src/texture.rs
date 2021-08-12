@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 
-use euclid::{Box2D, Point2D, Rect, Size2D};
+use figures::{ExtentsRect, Point, Rectlike, Size, SizedRect};
 
 use crate::{
     binding::Bind, buffers::Framebuffer, canvas::Canvas, color::Rgba8, device::Device,
@@ -14,7 +14,7 @@ pub struct Texture {
     pub extent: wgpu::Extent3d,
     pub format: wgpu::TextureFormat,
 
-    pub size: Size2D<u32, ScreenSpace>,
+    pub size: Size<u32, ScreenSpace>,
 }
 
 impl Texture {
@@ -26,7 +26,7 @@ impl Texture {
     ) where
         T: Clone,
     {
-        let capacity = texture.size.cast::<usize>().area();
+        let capacity = texture.size.cast::<usize>().area().get();
         let mut texels: Vec<T> = Vec::with_capacity(capacity);
         texels.resize(capacity, value);
 
@@ -46,7 +46,7 @@ impl Texture {
         T: Clone + Copy,
     {
         assert!(
-            texels.len() as u32 >= texture.size.area(),
+            texels.len() as u32 >= texture.size.area().get(),
             "fatal: incorrect length for texel buffer"
         );
 
@@ -54,7 +54,7 @@ impl Texture {
 
         Self::copy(
             &texture.wgpu,
-            Rect::new(Point2D::default(), texture.size),
+            SizedRect::new(Point::default(), texture.size),
             texels.len() as u32 / texture.extent.height * 4,
             texture.extent,
             &buf,
@@ -65,38 +65,38 @@ impl Texture {
     pub fn transfer<T: bytemuck::Pod + 'static>(
         texture: &Texture,
         texels: &[T],
-        rect: Rect<i32, ScreenSpace>,
+        rect: SizedRect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) where
         T: Into<Rgba8> + Clone + Copy,
     {
         // Wgpu's coordinate system has a downwards pointing Y axis.
-        let destination = rect.to_box2d();
+        let destination = rect.as_extents();
         // Make sure we have a positive rectangle
-        let destination = Box2D::<i32, ScreenSpace>::new(
-            Point2D::new(
-                destination.min.x.min(destination.max.x),
-                destination.min.y.min(destination.max.y),
+        let destination = ExtentsRect::<i32, ScreenSpace>::new(
+            Point::new(
+                destination.origin.x.min(destination.extent.x),
+                destination.origin.y.min(destination.extent.y),
             ),
-            Point2D::new(
-                destination.max.x.max(destination.min.x),
-                destination.max.y.max(destination.min.y),
+            Point::new(
+                destination.extent.x.max(destination.origin.x),
+                destination.extent.y.max(destination.origin.y),
             ),
         );
         // flip y, making it negative in the y direction
-        let destination = Box2D::new(
-            Point2D::new(destination.min.x, destination.max.y),
-            Point2D::new(destination.max.x, destination.min.y),
+        let destination = ExtentsRect::new(
+            Point::new(destination.origin.x, destination.extent.y),
+            Point::new(destination.extent.x, destination.origin.y),
         );
-        let rect = destination.to_rect();
+        let rect = destination.as_sized();
 
         // The width and height of the transfer area.
         let destination_size = rect.size.abs().cast::<u32>();
 
         // The destination coordinate of the transfer, on the texture.
         // We have to invert the Y coordinate as explained above.
-        let destination_point = Point2D::new(
+        let destination_point = Point::new(
             rect.origin.x as u32,
             texture.size.height as u32 - rect.origin.y as u32,
         );
@@ -115,7 +115,7 @@ impl Texture {
         };
         Self::copy(
             &texture.wgpu,
-            Rect::new(destination_point, destination_size),
+            SizedRect::new(destination_point, destination_size),
             texels.len() as u32 / destination_size.height * 4,
             extent,
             &buf,
@@ -125,8 +125,8 @@ impl Texture {
 
     fn blit(
         &self,
-        src: Rect<u32, ScreenSpace>,
-        dst: Rect<u32, ScreenSpace>,
+        src: SizedRect<u32, ScreenSpace>,
+        dst: SizedRect<u32, ScreenSpace>,
         encoder: &mut wgpu::CommandEncoder,
     ) {
         assert!(
@@ -154,8 +154,8 @@ impl Texture {
                 },
             },
             wgpu::Extent3d {
-                width: src.width() as u32,
-                height: src.height() as u32,
+                width: src.width().get() as u32,
+                height: src.height().get() as u32,
                 depth_or_array_layers: 1,
             },
         );
@@ -163,7 +163,7 @@ impl Texture {
 
     fn copy(
         texture: &wgpu::Texture,
-        destination: Rect<u32, ScreenSpace>,
+        destination: SizedRect<u32, ScreenSpace>,
         bytes_per_row: u32,
         extent: wgpu::Extent3d,
         buffer: &wgpu::Buffer,
@@ -215,7 +215,7 @@ impl Canvas for Texture {
     fn transfer(
         &self,
         buf: &[Rgba8],
-        rect: Rect<i32, ScreenSpace>,
+        rect: SizedRect<i32, ScreenSpace>,
         device: &mut Device,
         encoder: &mut wgpu::CommandEncoder,
     ) {
@@ -224,8 +224,8 @@ impl Canvas for Texture {
 
     fn blit(
         &self,
-        src: Rect<u32, ScreenSpace>,
-        dst: Rect<u32, ScreenSpace>,
+        src: SizedRect<u32, ScreenSpace>,
+        dst: SizedRect<u32, ScreenSpace>,
         encoder: &mut wgpu::CommandEncoder,
     ) {
         Texture::blit(self, src, dst, encoder);

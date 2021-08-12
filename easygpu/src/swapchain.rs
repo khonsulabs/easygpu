@@ -1,4 +1,4 @@
-use euclid::Size2D;
+use figures::Size;
 use wgpu::TextureFormat;
 
 use crate::{buffers::DepthBuffer, renderer::RenderTarget, transform::ScreenSpace};
@@ -12,7 +12,7 @@ use crate::{buffers::DepthBuffer, renderer::RenderTarget, transform::ScreenSpace
 pub struct SwapChain {
     pub wgpu: wgpu::SwapChain,
     pub depth: DepthBuffer,
-    pub size: Size2D<u32, ScreenSpace>,
+    pub size: Size<u32, ScreenSpace>,
     pub format: TextureFormat,
 }
 
@@ -36,7 +36,7 @@ impl SwapChain {
     }
 
     pub fn descriptor<PresentMode: Into<wgpu::PresentMode>>(
-        size: Size2D<u32, ScreenSpace>,
+        size: Size<u32, ScreenSpace>,
         mode: PresentMode,
         format: TextureFormat,
     ) -> wgpu::SwapChainDescriptor {
@@ -52,7 +52,7 @@ impl SwapChain {
 
 #[derive(Debug)]
 pub struct SwapChainTexture<'a> {
-    pub size: Size2D<u32, ScreenSpace>,
+    pub size: Size<u32, ScreenSpace>,
 
     wgpu: wgpu::SwapChainFrame,
     depth: &'a DepthBuffer,

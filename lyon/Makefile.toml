@@ -1,0 +1,32 @@
+[tasks.compile-fragment-shader]
+script_runner = "@shell"
+script = ['''
+glslc src/shaders/shape.frag -o src/shaders/shape.frag.spv
+''']
+
+
+[tasks.compile-vertex-shader]
+script_runner = "@shell"
+script = [
+    '''
+glslc src/shaders/shape.vert -o src/shaders/shape.vert.spv
+glslc src/shaders/shape-srgb.vert -o src/shaders/shape-srgb.vert.spv
+''',
+]
+
+[tasks.pre-build]
+dependencies = ["compile-fragment-shader", "compile-vertex-shader"]
+
+[tasks.clean]
+dependencies = ["cargo-clean", "shaders-clean"]
+
+[tasks.cargo-clean]
+command = "cargo"
+args = ["clean"]
+
+
+[tasks.shaders-clean]
+script_runner = "@shell"
+script = ['''
+rm src/shaders/*.spv
+''']
