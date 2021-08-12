@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### Changes
-
-- `easygpu-lyon` is now maintained as part of this repository. The version
-  numbers were already tightly linked. This changelog will now contain
-  information relating to both.
-
 ### Breaking API Changes
 
 - `easygpu` now uses `figures` for its math types, and `ScreenScale` and
@@ -22,6 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   issue](https://github.com/khonsulabs/figures/issues). We may not add all
   requested functionality, but as long as it extends one of the types `figures`
   already has, it likely will be added upon request.
+
+  One of the truly breaking changes is `ScreenTransformation::ortho()`. The
+  parameter order is now `left`, `top`, `right`, `bottom`, `near`, `far`. This
+  order matches my personal preference of the order in which sides of a
+  rectangle should be specified. Personal preference, but since it was getting
+  reimplemented, I made this change.
+
+### Changed
+
+- `easygpu-lyon` is now maintained as part of this repository. The version
+  numbers were already tightly linked. This changelog will now contain
+  information relating to both.
 
 ## v0.0.12
 
