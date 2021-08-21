@@ -64,7 +64,7 @@ impl BindingType {
                 view_dimension: wgpu::TextureViewDimension::D2,
             },
             BindingType::Sampler => wgpu::BindingType::Sampler {
-                comparison: true,
+                comparison: false,
                 filtering: true,
             },
         }

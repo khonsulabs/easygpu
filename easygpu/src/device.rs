@@ -307,7 +307,7 @@ impl Device {
                 mipmap_filter: wgpu::FilterMode::Nearest,
                 lod_min_clamp: -100.0,
                 lod_max_clamp: 100.0,
-                compare: Some(wgpu::CompareFunction::Always),
+                compare: None,
                 anisotropy_clamp: None,
                 label: None,
                 border_color: None,
