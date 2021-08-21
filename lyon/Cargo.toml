@@ -18,3 +18,4 @@ bytemuck = { version = "1", features = ["derive"] }
 [dev-dependencies]
 winit = "0.25"
 futures = "0.3"
+env_logger = "0.9"

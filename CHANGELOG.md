@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   order matches my personal preference of the order in which sides of a
   rectangle should be specified. Personal preference, but since it was getting
   reimplemented, I made this change.
+- Basic MSAA support has been added. Multisampling textures seems like its own ball of wax. This is aimed at allowing rendering to use multisampling to produce antialiasing around geometry borders. The lyon examples have been updated to use 4 samples.
+  - `Renderer::for_surface`, `Renderer::offscreen`, `Device::create_texture`, `Device::create_framebuffer`, `Device::create_zbuffer` now take `sample_count` as a parameter. Pass in 1 to disable MSAA rendering. Any higher number controls the number of samples taken.
+  - `Device::create_pipeline` now accepts a `MultisampleState` parameter to control multisampling.
+  - `Renderer::texture` now takes an additional argument to specify if the texture should be multisampled. If true, the texture will be created using the sample count the renderer was initialized with.
+  - `Frame::pass` now accepts a multisample_buffer parameter. This is a texture view for a multisampled texture that will be used to enable MSAA rendering. If None is passed, MSAA will not take place.
 
 ### Changed
 

@@ -1,3 +1,5 @@
+use wgpu::TextureView;
+
 use crate::{
     buffers::UniformBuffer,
     renderer::{PassOp, RenderPassExt, RenderTarget},
@@ -13,14 +15,20 @@ impl Frame {
         Self { encoder }
     }
 
-    pub fn pass<'a, T: RenderTarget>(
+    pub fn pass<'a>(
         &'a mut self,
         op: PassOp,
-        view: &'a T,
+        view: &'a impl RenderTarget,
+        multisample_buffer: Option<&'a TextureView>,
     ) -> wgpu::RenderPass<'a> {
+        let (pass_view, resolve_target) = match multisample_buffer {
+            Some(buffer) => (buffer, Some(view.color_target())),
+            None => (view.color_target(), None),
+        };
         wgpu::RenderPass::begin(
             &mut self.encoder,
-            view.color_target(),
+            pass_view,
+            resolve_target,
             view.zdepth_target(),
             op,
         )

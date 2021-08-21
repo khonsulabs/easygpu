@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
-use crate::shape::{Shape, Vertex};
 use easygpu::{color::Rgba, renderer::Renderer};
 use lyon_tessellation::{
     math::Point, path::Path, FillOptions, FillTessellator, GeometryBuilderError, StrokeOptions,
     StrokeTessellator, TessellationError, VertexId,
 };
+
+use crate::shape::{Shape, Vertex};
 
 mod lyon_builders;
 
@@ -16,7 +17,8 @@ pub struct ShapeBuilder {
     vertices: Vec<Vertex>,
     indicies: Vec<u16>,
 
-    /// This RGBA color is used when tesselating a path with no color data (Attributes in lyon terminology)
+    /// This RGBA color is used when tesselating a path with no color data
+    /// (Attributes in lyon terminology)
     pub default_color: [f32; 4],
 }
 
@@ -36,7 +38,8 @@ impl ShapeBuilder {
 
     /// Prepare and load this builder into the renderer.
     ///
-    /// This does not consume the builder, because wgpu copies the buffer rather than taking ownerhip.
+    /// This does not consume the builder, because wgpu copies the buffer rather
+    /// than taking ownerhip.
     pub fn prepare(&self, renderer: &Renderer) -> Shape {
         let verticies = renderer.device.create_buffer(&self.vertices);
         let indicies = renderer.device.create_index(&self.indicies);

@@ -1,6 +1,6 @@
-use bytemuck::{Pod, Zeroable};
 use std::sync::Arc;
 
+use bytemuck::{Pod, Zeroable};
 use easygpu::{
     buffers::{IndexBuffer, VertexBuffer},
     color::Rgba8,

@@ -42,7 +42,7 @@ pub enum BindingType {
     UniformBuffer,
     UniformBufferDynamic,
     Sampler,
-    SampledTexture,
+    SampledTexture { multisampled: bool },
 }
 
 impl BindingType {
@@ -58,9 +58,9 @@ impl BindingType {
                 has_dynamic_offset: false,
                 min_binding_size: None,
             },
-            BindingType::SampledTexture => wgpu::BindingType::Texture {
+            BindingType::SampledTexture { multisampled } => wgpu::BindingType::Texture {
                 sample_type: wgpu::TextureSampleType::Float { filterable: false },
-                multisampled: false,
+                multisampled: *multisampled,
                 view_dimension: wgpu::TextureViewDimension::D2,
             },
             BindingType::Sampler => wgpu::BindingType::Sampler {

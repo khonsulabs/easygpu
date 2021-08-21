@@ -1,5 +1,7 @@
 use figures::Size;
-use wgpu::{util::DeviceExt, FilterMode, ShaderFlags, TextureFormat, TextureUsage};
+use wgpu::{
+    util::DeviceExt, FilterMode, MultisampleState, ShaderFlags, TextureFormat, TextureUsage,
+};
 
 use crate::{
     binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
@@ -132,6 +134,7 @@ impl Device {
         size: Size<u32, ScreenSpace>,
         format: TextureFormat,
         usage: TextureUsage,
+        sample_count: u32,
     ) -> Texture {
         let texture_extent = wgpu::Extent3d {
             width: size.width,
@@ -141,7 +144,7 @@ impl Device {
         let texture = self.wgpu.create_texture(&wgpu::TextureDescriptor {
             size: texture_extent,
             mip_level_count: 1,
-            sample_count: 1,
+            sample_count,
             dimension: wgpu::TextureDimension::D2,
             format,
             usage,
@@ -162,6 +165,7 @@ impl Device {
         &self,
         size: Size<u32, ScreenSpace>,
         format: TextureFormat,
+        sample_count: u32,
     ) -> Framebuffer {
         let extent = wgpu::Extent3d {
             width: size.width,
@@ -171,7 +175,7 @@ impl Device {
         let texture = self.wgpu.create_texture(&wgpu::TextureDescriptor {
             size: extent,
             mip_level_count: 1,
-            sample_count: 1,
+            sample_count,
             dimension: wgpu::TextureDimension::D2,
             format,
             usage: TextureUsage::SAMPLED
@@ -190,11 +194,11 @@ impl Device {
                 format,
                 size,
             },
-            depth: self.create_zbuffer(size),
+            depth: self.create_zbuffer(size, sample_count),
         }
     }
 
-    pub fn create_zbuffer(&self, size: Size<u32, ScreenSpace>) -> DepthBuffer {
+    pub fn create_zbuffer(&self, size: Size<u32, ScreenSpace>, sample_count: u32) -> DepthBuffer {
         let format = DepthBuffer::FORMAT;
         let extent = wgpu::Extent3d {
             width: size.width,
@@ -205,7 +209,7 @@ impl Device {
             size: extent,
             label: None,
             mip_level_count: 1,
-            sample_count: 1,
+            sample_count,
             dimension: wgpu::TextureDimension::D2,
             format,
             usage: TextureUsage::COPY_DST | TextureUsage::RENDER_ATTACHMENT,
@@ -350,6 +354,8 @@ impl Device {
         self.queue.submit(cmds);
     }
 
+    // TODO clippy::too_many_arguments
+    #[allow(clippy::too_many_arguments)]
     pub fn create_pipeline(
         &self,
         pipeline_layout: PipelineLayout,
@@ -358,6 +364,7 @@ impl Device {
         vs: &Shader,
         fs: &Shader,
         swapchain_format: TextureFormat,
+        multisample: MultisampleState,
     ) -> Pipeline {
         let vertex_attrs = vertex_layout.to_wgpu();
 
@@ -410,7 +417,7 @@ impl Device {
                         clamp: 0.,
                     },
                 }),
-                multisample: wgpu::MultisampleState::default(),
+                multisample,
                 fragment: Some(wgpu::FragmentState {
                     module: &fs.wgpu,
                     entry_point: "main",

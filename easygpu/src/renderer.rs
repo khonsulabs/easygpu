@@ -1,7 +1,7 @@
 use std::{num::NonZeroU32, ops::Range};
 
 use figures::{Size, SizedRect};
-use wgpu::{FilterMode, TextureFormat};
+use wgpu::{FilterMode, MultisampleState, TextureFormat};
 
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
@@ -26,12 +26,15 @@ pub trait Draw {
 #[derive(Debug)]
 pub struct Renderer {
     pub device: Device,
+    /// Enables MSAA for values > 1.
+    pub(crate) sample_count: u32,
 }
 
 impl Renderer {
     pub async fn for_surface(
         surface: wgpu::Surface,
         instance: &wgpu::Instance,
+        sample_count: u32,
     ) -> Result<Self, Error> {
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
@@ -43,13 +46,19 @@ impl Renderer {
 
         Ok(Self {
             device: Device::for_surface(surface, &adapter).await?,
+            sample_count,
         })
     }
 
-    pub async fn offscreen(adapter: &wgpu::Adapter) -> Result<Self, Error> {
+    pub async fn offscreen(adapter: &wgpu::Adapter, sample_count: u32) -> Result<Self, Error> {
         Ok(Self {
             device: Device::offscreen(adapter).await?,
+            sample_count,
         })
+    }
+
+    pub const fn sample_count(&self) -> u32 {
+        self.sample_count
     }
 
     pub fn swap_chain<PresentMode: Into<wgpu::PresentMode>>(
@@ -59,7 +68,7 @@ impl Renderer {
         format: TextureFormat,
     ) -> SwapChain {
         SwapChain {
-            depth: self.device.create_zbuffer(size),
+            depth: self.device.create_zbuffer(size, self.sample_count),
             wgpu: self.device.create_swap_chain(size, mode, format),
             size,
             format,
@@ -71,8 +80,11 @@ impl Renderer {
         size: Size<u32, ScreenSpace>,
         format: wgpu::TextureFormat,
         usage: wgpu::TextureUsage,
+        multisampled: bool,
     ) -> Texture {
-        self.device.create_texture(size, format, usage)
+        let sample_count = if multisampled { self.sample_count } else { 1 };
+        self.device
+            .create_texture(size, format, usage, sample_count)
     }
 
     pub fn framebuffer(
@@ -80,11 +92,12 @@ impl Renderer {
         size: Size<u32, ScreenSpace>,
         format: wgpu::TextureFormat,
     ) -> Framebuffer {
-        self.device.create_framebuffer(size, format)
+        self.device
+            .create_framebuffer(size, format, self.sample_count)
     }
 
     pub fn zbuffer(&self, size: Size<u32, ScreenSpace>) -> DepthBuffer {
-        self.device.create_zbuffer(size)
+        self.device.create_zbuffer(size, self.sample_count)
     }
 
     pub fn vertex_buffer<T: bytemuck::Pod>(&self, verts: &[T]) -> VertexBuffer
@@ -120,8 +133,19 @@ impl Renderer {
         let fs = self.device.create_shader(desc.fragment_shader);
 
         T::setup(
-            self.device
-                .create_pipeline(pip_layout, vertex_layout, blending, &vs, &fs, format),
+            self.device.create_pipeline(
+                pip_layout,
+                vertex_layout,
+                blending,
+                &vs,
+                &fs,
+                format,
+                MultisampleState {
+                    count: self.sample_count,
+                    mask: !0,
+                    alpha_to_coverage_enabled: false,
+                },
+            ),
             &self.device,
         )
     }
@@ -248,6 +272,7 @@ pub trait RenderPassExt<'a> {
     fn begin(
         encoder: &'a mut wgpu::CommandEncoder,
         view: &'a wgpu::TextureView,
+        resolve_target: Option<&'a wgpu::TextureView>,
         depth: &'a wgpu::TextureView,
         op: PassOp,
     ) -> Self;
@@ -270,6 +295,7 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
     fn begin(
         encoder: &'a mut wgpu::CommandEncoder,
         view: &'a wgpu::TextureView,
+        resolve_target: Option<&'a wgpu::TextureView>,
         depth: &'a wgpu::TextureView,
         op: PassOp,
     ) -> Self {
@@ -277,7 +303,7 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
             label: None,
             color_attachments: &[wgpu::RenderPassColorAttachment {
                 view,
-                resolve_target: None,
+                resolve_target,
                 ops: wgpu::Operations {
                     load: op.to_wgpu(),
                     store: true,

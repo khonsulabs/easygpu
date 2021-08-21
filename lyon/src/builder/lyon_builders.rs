@@ -1,9 +1,10 @@
-use crate::{builder::ShapeBuilder, shape::Vertex};
 use lyon_tessellation::{
     math::Point, BasicGeometryBuilder, FillAttributes, FillGeometryBuilder, FillVertexConstructor,
     GeometryBuilder, GeometryBuilderError, StrokeAttributes, StrokeGeometryBuilder,
     StrokeVertexConstructor, VertexId,
 };
+
+use crate::{builder::ShapeBuilder, shape::Vertex};
 
 impl FillVertexConstructor<Vertex> for ShapeBuilder {
     fn new_vertex(&mut self, point: Point, mut attributes: FillAttributes) -> Vertex {
