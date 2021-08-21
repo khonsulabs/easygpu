@@ -53,7 +53,7 @@ impl VertexLayout {
     pub fn to_wgpu(&self) -> wgpu::VertexBufferLayout {
         wgpu::VertexBufferLayout {
             array_stride: self.size as wgpu::BufferAddress,
-            step_mode: wgpu::InputStepMode::Vertex,
+            step_mode: wgpu::VertexStepMode::Vertex,
             attributes: self.wgpu_attrs.as_slice(),
         }
     }

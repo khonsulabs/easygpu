@@ -1,4 +1,8 @@
-use easygpu::{figures::Size, prelude::*, wgpu::TextureUsage};
+use easygpu::{
+    figures::Size,
+    prelude::*,
+    wgpu::{PresentMode, TextureUsages},
+};
 use easygpu_lyon::{LyonPipeline, Srgb, VertexShaderSource};
 use winit::{
     event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent},
@@ -20,7 +24,7 @@ pub trait Sandbox: Sized + 'static {
         let size = window.inner_size();
 
         // Setup renderer
-        let instance = easygpu::wgpu::Instance::new(easygpu::wgpu::BackendBit::PRIMARY);
+        let instance = easygpu::wgpu::Instance::new(easygpu::wgpu::Backends::PRIMARY);
         let surface = unsafe { instance.create_surface(&window) };
         let mut renderer = futures::executor::block_on(Renderer::for_surface(
             surface,
@@ -30,13 +34,12 @@ pub trait Sandbox: Sized + 'static {
         let sandbox = Self::create(&renderer);
         let size = Size::new(size.width, size.height).cast::<u32>();
 
-        let mut textures =
-            renderer.swap_chain(size, PresentMode::default(), Srgb::sampler_format());
+        renderer.configure(size, PresentMode::Fifo, Srgb::sampler_format());
 
         let multisample_texture = renderer.texture(
             size,
             Srgb::sampler_format(),
-            TextureUsage::RENDER_ATTACHMENT | TextureUsage::SAMPLED,
+            TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING,
             MSAA_SAMPLE_COUNT > 1,
         );
 
@@ -45,10 +48,10 @@ pub trait Sandbox: Sized + 'static {
                 WindowEvent::CloseRequested => {
                     *control_flow = ControlFlow::Exit;
                 }
-                WindowEvent::Resized(size) => {
-                    textures = renderer.swap_chain(
-                        Size::new(size.width, size.height).cast::<u32>(),
-                        PresentMode::default(),
+                WindowEvent::Resized(new_size) => {
+                    renderer.configure(
+                        Size::new(new_size.width, new_size.height).cast::<u32>(),
+                        PresentMode::Fifo,
                         Srgb::sampler_format(),
                     );
                     *control_flow = ControlFlow::Wait;
@@ -67,9 +70,8 @@ pub trait Sandbox: Sized + 'static {
                 _ => {}
             },
             Event::RedrawRequested(_) =>
-                if let Ok(output) = textures.next_texture() {
+                if let Ok(output) = renderer.current_frame() {
                     let mut frame = renderer.frame();
-
                     renderer.update_pipeline(
                         sandbox.pipeline(),
                         ScreenTransformation::ortho(

@@ -12,7 +12,6 @@ pub mod renderable;
 pub mod renderer;
 pub mod sampler;
 pub mod shader;
-pub mod swapchain;
 pub mod texture;
 pub mod transform;
 pub mod vertex;
@@ -23,7 +22,7 @@ pub use wgpu;
 pub mod prelude {
     pub use super::{
         binding::*, buffers::*, canvas::*, color::*, device::*, error::*, frame::*, pipeline::*,
-        renderable::*, renderer::*, sampler::*, shader::*, swapchain::*, texture::*, transform::*,
-        vertex::*, wgpu,
+        renderable::*, renderer::*, sampler::*, shader::*, texture::*, transform::*, vertex::*,
+        wgpu,
     };
 }

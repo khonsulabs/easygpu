@@ -1,6 +1,7 @@
 use std::num::NonZeroU32;
 
 use figures::{ExtentsRect, Point, Rectlike, Size, SizedRect};
+use wgpu::TextureAspect;
 
 use crate::{
     binding::Bind, buffers::Framebuffer, canvas::Canvas, color::Rgba8, device::Device,
@@ -50,7 +51,7 @@ impl Texture {
             "fatal: incorrect length for texel buffer"
         );
 
-        let buf = device.create_buffer_from_slice(texels, wgpu::BufferUsage::COPY_SRC);
+        let buf = device.create_buffer_from_slice(texels, wgpu::BufferUsages::COPY_SRC);
 
         Self::copy(
             &texture.wgpu,
@@ -106,7 +107,7 @@ impl Texture {
             "fatal: transfer size must be <= texture size"
         );
 
-        let buf = device.create_buffer_from_slice(texels, wgpu::BufferUsage::COPY_SRC);
+        let buf = device.create_buffer_from_slice(texels, wgpu::BufferUsages::COPY_SRC);
 
         let extent = wgpu::Extent3d {
             width: destination_size.width,
@@ -143,6 +144,7 @@ impl Texture {
                     y: src.origin.y,
                     z: 0,
                 },
+                aspect: TextureAspect::All,
             },
             wgpu::ImageCopyTexture {
                 texture: &self.wgpu,
@@ -152,6 +154,7 @@ impl Texture {
                     y: dst.origin.y,
                     z: 0,
                 },
+                aspect: TextureAspect::All,
             },
             wgpu::Extent3d {
                 width: src.width().get() as u32,
@@ -186,6 +189,7 @@ impl Texture {
                     y: destination.origin.y,
                     z: 0,
                 },
+                aspect: TextureAspect::All,
             },
             extent,
         );

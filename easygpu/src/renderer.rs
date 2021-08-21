@@ -1,7 +1,9 @@
 use std::{num::NonZeroU32, ops::Range};
 
-use figures::{Size, SizedRect};
-use wgpu::{FilterMode, MultisampleState, TextureFormat};
+use figures::{Pixels, Size, SizedRect};
+use wgpu::{
+    FilterMode, MultisampleState, SurfaceFrame, TextureAspect, TextureFormat, TextureViewDescriptor,
+};
 
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
@@ -13,7 +15,6 @@ use crate::{
     frame::Frame,
     pipeline::{AbstractPipeline, Blending},
     sampler::Sampler,
-    swapchain::SwapChain,
     texture::Texture,
     transform::ScreenSpace,
     vertex::VertexLayout,
@@ -61,25 +62,37 @@ impl Renderer {
         self.sample_count
     }
 
-    pub fn swap_chain<PresentMode: Into<wgpu::PresentMode>>(
-        &self,
+    pub fn configure<PresentMode: Into<wgpu::PresentMode>>(
+        &mut self,
         size: Size<u32, ScreenSpace>,
         mode: PresentMode,
         format: TextureFormat,
-    ) -> SwapChain {
-        SwapChain {
-            depth: self.device.create_zbuffer(size, self.sample_count),
-            wgpu: self.device.create_swap_chain(size, mode, format),
-            size,
-            format,
-        }
+    ) {
+        self.device.configure(size, mode, format)
+    }
+
+    pub fn current_frame(&self) -> Result<RenderFrame, wgpu::SurfaceError> {
+        let surface = self.device.surface.as_ref().unwrap();
+        let surface_frame = surface.get_current_frame()?;
+        let view = surface_frame
+            .output
+            .texture
+            .create_view(&TextureViewDescriptor::default());
+        Ok(RenderFrame {
+            wgpu: surface_frame,
+            view,
+            depth: self
+                .device
+                .create_zbuffer(self.device.size(), self.sample_count),
+            size: self.device.size(),
+        })
     }
 
     pub fn texture(
         &self,
         size: Size<u32, ScreenSpace>,
         format: wgpu::TextureFormat,
-        usage: wgpu::TextureUsage,
+        usage: wgpu::TextureUsages,
         multisampled: bool,
     ) -> Texture {
         let sample_count = if multisampled { self.sample_count } else { 1 };
@@ -160,7 +173,7 @@ impl Renderer {
         let gpu_buffer = self.device.wgpu.create_buffer(&wgpu::BufferDescriptor {
             label: None,
             size: bytesize as u64,
-            usage: wgpu::BufferUsage::MAP_READ | wgpu::BufferUsage::COPY_DST,
+            usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
 
@@ -169,6 +182,7 @@ impl Renderer {
                 texture: &fb.texture.wgpu,
                 mip_level: 0,
                 origin: wgpu::Origin3d { x: 0, y: 0, z: 0 },
+                aspect: TextureAspect::All,
             },
             wgpu::ImageCopyBuffer {
                 buffer: &gpu_buffer,
@@ -383,4 +397,21 @@ pub trait RenderTarget {
     fn color_target(&self) -> &wgpu::TextureView;
     /// Depth component.
     fn zdepth_target(&self) -> &wgpu::TextureView;
+}
+
+pub struct RenderFrame {
+    pub view: wgpu::TextureView,
+    pub wgpu: SurfaceFrame,
+    pub depth: DepthBuffer,
+    pub size: Size<u32, Pixels>,
+}
+
+impl RenderTarget for RenderFrame {
+    fn color_target(&self) -> &wgpu::TextureView {
+        &self.view
+    }
+
+    fn zdepth_target(&self) -> &wgpu::TextureView {
+        &self.depth.texture.view
+    }
 }

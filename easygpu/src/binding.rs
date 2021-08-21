@@ -1,4 +1,4 @@
-use wgpu::ShaderStage;
+use wgpu::ShaderStages;
 
 /// A group of bindings.
 #[derive(Debug)]
@@ -74,5 +74,5 @@ impl BindingType {
 #[derive(Debug)]
 pub struct Binding {
     pub binding: BindingType,
-    pub stage: ShaderStage,
+    pub stage: ShaderStages,
 }

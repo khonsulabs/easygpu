@@ -1,7 +1,5 @@
-use figures::Size;
-use wgpu::{
-    util::DeviceExt, FilterMode, MultisampleState, ShaderFlags, TextureFormat, TextureUsage,
-};
+use figures::{Pixels, Size};
+use wgpu::{util::DeviceExt, FilterMode, MultisampleState, TextureFormat, TextureUsages};
 
 use crate::{
     binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
@@ -9,7 +7,6 @@ use crate::{
     pipeline::{Blending, Pipeline, PipelineLayout, Set},
     sampler::Sampler,
     shader::Shader,
-    swapchain::SwapChain,
     texture::Texture,
     transform::ScreenSpace,
     vertex::VertexLayout,
@@ -20,6 +17,7 @@ pub struct Device {
     pub wgpu: wgpu::Device,
     pub queue: wgpu::Queue,
     pub surface: Option<wgpu::Surface>,
+    size: Size<u32, Pixels>,
 }
 
 impl Device {
@@ -42,6 +40,7 @@ impl Device {
             wgpu: device,
             queue,
             surface: Some(surface),
+            size: Size::default(),
         })
     }
 
@@ -61,11 +60,16 @@ impl Device {
             wgpu: device,
             queue,
             surface: None,
+            size: Size::default(),
         })
     }
 
-    pub fn device(&self) -> &wgpu::Device {
+    pub const fn device(&self) -> &wgpu::Device {
         &self.wgpu
+    }
+
+    pub const fn size(&self) -> Size<u32, Pixels> {
+        self.size
     }
 
     pub fn device_mut(&mut self) -> &mut wgpu::Device {
@@ -77,19 +81,24 @@ impl Device {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None })
     }
 
-    pub fn create_swap_chain<PM: Into<wgpu::PresentMode>>(
-        &self,
+    pub fn configure<PM: Into<wgpu::PresentMode>>(
+        &mut self,
         size: Size<u32, ScreenSpace>,
         mode: PM,
         format: TextureFormat,
-    ) -> wgpu::SwapChain {
-        let desc = SwapChain::descriptor(size, mode, format);
-        self.wgpu.create_swap_chain(
-            self.surface
-                .as_ref()
-                .expect("create_swap_chain only works when initalized with a wgpu::Surface"),
-            &desc,
-        )
+    ) {
+        let desc = wgpu::SurfaceConfiguration {
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            format,
+            present_mode: mode.into(),
+            width: size.width,
+            height: size.height,
+        };
+        self.surface
+            .as_ref()
+            .expect("create_swap_chain only works when initalized with a wgpu::Surface")
+            .configure(&self.wgpu, &desc);
+        self.size = size;
     }
 
     pub fn create_pipeline_layout(&self, ss: &[Set]) -> PipelineLayout {
@@ -106,7 +115,6 @@ impl Device {
                 .wgpu
                 .create_shader_module(&wgpu::ShaderModuleDescriptor {
                     source: wgpu::util::make_spirv(source),
-                    flags: ShaderFlags::default(),
                     label: None, // TODO labels would be nice
                 }),
         }
@@ -118,7 +126,6 @@ impl Device {
                 .wgpu
                 .create_shader_module(&wgpu::ShaderModuleDescriptor {
                     source: wgpu::ShaderSource::Wgsl(source.into()),
-                    flags: ShaderFlags::default(),
                     label: None, // TODO labels would be nice
                 }),
         }
@@ -133,7 +140,7 @@ impl Device {
         &self,
         size: Size<u32, ScreenSpace>,
         format: TextureFormat,
-        usage: TextureUsage,
+        usage: TextureUsages,
         sample_count: u32,
     ) -> Texture {
         let texture_extent = wgpu::Extent3d {
@@ -178,10 +185,10 @@ impl Device {
             sample_count,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: TextureUsage::SAMPLED
-                | TextureUsage::COPY_DST
-                | TextureUsage::COPY_SRC
-                | TextureUsage::RENDER_ATTACHMENT,
+            usage: TextureUsages::TEXTURE_BINDING
+                | TextureUsages::COPY_DST
+                | TextureUsages::COPY_SRC
+                | TextureUsages::RENDER_ATTACHMENT,
             label: None,
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -212,7 +219,7 @@ impl Device {
             sample_count,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: TextureUsage::COPY_DST | TextureUsage::RENDER_ATTACHMENT,
+            usage: TextureUsages::COPY_DST | TextureUsages::RENDER_ATTACHMENT,
         });
         let view = wgpu.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -259,7 +266,7 @@ impl Device {
         T: 'static + Copy,
     {
         VertexBuffer {
-            wgpu: self.create_buffer_from_slice(vertices, wgpu::BufferUsage::VERTEX),
+            wgpu: self.create_buffer_from_slice(vertices, wgpu::BufferUsages::VERTEX),
             size: (vertices.len() * std::mem::size_of::<T>()) as u32,
         }
     }
@@ -276,13 +283,13 @@ impl Device {
                 .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                     label: Some("Uniform Buffer"),
                     contents: bytemuck::cast_slice(buf),
-                    usage: wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_DST,
+                    usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                 }),
         }
     }
 
     pub fn create_index(&self, indices: &[u16]) -> IndexBuffer {
-        let index_buf = self.create_buffer_from_slice(indices, wgpu::BufferUsage::INDEX);
+        let index_buf = self.create_buffer_from_slice(indices, wgpu::BufferUsages::INDEX);
         IndexBuffer {
             wgpu: index_buf,
             elements: indices.len() as u32,
@@ -331,7 +338,7 @@ impl Device {
     pub fn create_buffer_from_slice<T: bytemuck::Pod>(
         &self,
         slice: &[T],
-        usage: wgpu::BufferUsage,
+        usage: wgpu::BufferUsages,
     ) -> wgpu::Buffer {
         self.wgpu
             .create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -436,7 +443,7 @@ impl Device {
                             },
                         }),
 
-                        write_mask: wgpu::ColorWrite::ALL,
+                        write_mask: wgpu::ColorWrites::ALL,
                     }],
                 }),
             });

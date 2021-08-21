@@ -1,5 +1,6 @@
 [workspace]
 members = ["easygpu", "lyon"]
+resolver = "2"
 
 [patch.crates-io]
 # figures = { path = "../figures/figures" }

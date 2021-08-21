@@ -60,7 +60,7 @@ where
             vertex_layout: &[VertexFormat::Float3, VertexFormat::UByte4],
             pipeline_layout: &[Set(&[Binding {
                 binding: BindingType::UniformBuffer,
-                stage: ShaderStage::VERTEX,
+                stage: ShaderStages::VERTEX,
             }])],
             vertex_shader: T::shader(),
             fragment_shader: include_bytes!("shaders/shape.frag.spv"),

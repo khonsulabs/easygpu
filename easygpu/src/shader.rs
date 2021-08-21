@@ -3,4 +3,4 @@ pub struct Shader {
     pub wgpu: wgpu::ShaderModule,
 }
 
-pub use wgpu::ShaderStage;
+pub use wgpu::ShaderStages;
