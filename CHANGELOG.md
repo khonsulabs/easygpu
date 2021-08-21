@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking API Changes
 
+- `wgpu` has been updated to 0.10. With it come these breaking API changes:
+  - `SwapChain` has been removed. Change existing calls from `create_swap_chain` to `configure`.
+  - `Renderer` has a new method, `current_frame` which returns a `RenderFrame`. This can be used in place of the former `SwapChainTexture` type.
 - `easygpu` now uses `figures` for its math types, and `ScreenScale` and
   `WorldScale` now are type aliases for the unit types provided by that crate.
   If you're using functionality that was in `euclid` but is no longer available
