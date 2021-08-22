@@ -1,6 +1,6 @@
 [package]
 name = "easygpu"
-version = "0.0.12"
+version = "0.0.13"
 description = "Simple wrapper around wgpu aiming to make some common operations easier"
 repository = "https://github.com/khonsulabs/easygpu"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
@@ -12,7 +12,7 @@ keywords = ["graphics", "wgpu"]
 all-features = true
 
 [dependencies]
-figures = { git = "https://github.com/khonsulabs/figures.git", branch = "main" }
+figures = "0.1"
 wgpu = { version = "0.10", features = ["spirv"] }
 num-traits = "0.2"
 thiserror = "1"
