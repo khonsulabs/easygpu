@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Device::create_pipeline` now accepts a `MultisampleState` parameter to control multisampling.
   - `Renderer::texture` now takes an additional argument to specify if the texture should be multisampled. If true, the texture will be created using the sample count the renderer was initialized with.
   - `Frame::pass` now accepts a multisample_buffer parameter. This is a texture view for a multisampled texture that will be used to enable MSAA rendering. If None is passed, MSAA will not take place.
+- `easygpu-lyon` has now updated to lyon 0.17.
 
 ### Changed
 

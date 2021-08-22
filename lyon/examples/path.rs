@@ -22,7 +22,7 @@ impl Sandbox for PathExample {
 
         // RGBA colors specified for each vertex
         let mut path_builder = Path::builder_with_attributes(4);
-        path_builder.move_to(point(50., 50.), &[1., 0., 0., 1.]);
+        path_builder.begin(point(50., 50.), &[1., 0., 0., 1.]);
         path_builder.line_to(point(100., 150.), &[0., 1., 0., 1.]);
         path_builder.line_to(point(150., 50.), &[0., 0., 1., 1.]);
         path_builder.close();
@@ -34,7 +34,7 @@ impl Sandbox for PathExample {
         // White outline
         builder.default_color = [1., 1., 1., 1.];
         let mut path_builder = Path::builder();
-        path_builder.move_to(point(50., 50.));
+        path_builder.begin(point(50., 50.));
         path_builder.line_to(point(100., 150.));
         path_builder.line_to(point(150., 50.));
         path_builder.close();

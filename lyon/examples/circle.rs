@@ -1,6 +1,6 @@
 use easygpu::prelude::*;
 use easygpu_lyon::{LyonPipeline, Shape, ShapeBuilder, Srgb, VertexShaderSource};
-use lyon_tessellation::{basic_shapes::fill_circle, math::Point, FillOptions};
+use lyon_tessellation::{math::Point, FillOptions, FillTessellator};
 
 mod sandbox;
 use sandbox::Sandbox;
@@ -21,13 +21,16 @@ impl Sandbox for CircleExample {
         let mut builder = ShapeBuilder::default();
         builder.default_color = [1., 0., 0., 1.];
 
-        fill_circle(
-            Point::new(50., 50.),
-            25.,
-            &FillOptions::default(),
-            &mut builder,
-        )
-        .expect("Error tesselating circle");
+        let mut tessellator = FillTessellator::new();
+
+        tessellator
+            .tessellate_circle(
+                Point::new(50., 50.),
+                25.,
+                &FillOptions::default(),
+                &mut builder,
+            )
+            .expect("Error tesselating circle");
         let shape = builder.prepare(renderer);
 
         Self { pipeline, shape }

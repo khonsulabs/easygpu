@@ -1,32 +1,33 @@
 use lyon_tessellation::{
-    math::Point, BasicGeometryBuilder, FillAttributes, FillGeometryBuilder, FillVertexConstructor,
-    GeometryBuilder, GeometryBuilderError, StrokeAttributes, StrokeGeometryBuilder,
-    StrokeVertexConstructor, VertexId,
+    FillGeometryBuilder, FillVertex, FillVertexConstructor, GeometryBuilder, GeometryBuilderError,
+    StrokeGeometryBuilder, StrokeVertex, StrokeVertexConstructor, VertexId,
 };
 
 use crate::{builder::ShapeBuilder, shape::Vertex};
 
 impl FillVertexConstructor<Vertex> for ShapeBuilder {
-    fn new_vertex(&mut self, point: Point, mut attributes: FillAttributes) -> Vertex {
-        let attributes = attributes.interpolated_attributes();
-        self.new_vertex(point, attributes)
+    fn new_vertex(&mut self, mut vertex: FillVertex) -> Vertex {
+        let position = vertex.position();
+        let attributes = vertex.interpolated_attributes();
+        self.new_vertex(position, attributes)
     }
 }
 
 impl StrokeVertexConstructor<Vertex> for ShapeBuilder {
-    fn new_vertex(&mut self, point: Point, mut attributes: StrokeAttributes) -> Vertex {
-        let attributes = attributes.interpolated_attributes();
-        self.new_vertex(point, attributes)
+    fn new_vertex(&mut self, mut vertex: StrokeVertex) -> Vertex {
+        let position = vertex.position();
+        let attributes = vertex.interpolated_attributes();
+        self.new_vertex(position, attributes)
     }
 }
 
 impl FillGeometryBuilder for ShapeBuilder {
     fn add_fill_vertex(
         &mut self,
-        position: Point,
-        mut attributes: FillAttributes,
+        mut vertex: FillVertex,
     ) -> Result<VertexId, GeometryBuilderError> {
-        let attributes = attributes.interpolated_attributes();
+        let position = vertex.position();
+        let attributes = vertex.interpolated_attributes();
         self.add_vertex(position, attributes)
     }
 }
@@ -34,10 +35,10 @@ impl FillGeometryBuilder for ShapeBuilder {
 impl StrokeGeometryBuilder for ShapeBuilder {
     fn add_stroke_vertex(
         &mut self,
-        position: Point,
-        mut attributes: StrokeAttributes,
+        mut vertex: StrokeVertex,
     ) -> Result<VertexId, GeometryBuilderError> {
-        let attributes = attributes.interpolated_attributes();
+        let position = vertex.position();
+        let attributes = vertex.interpolated_attributes();
         self.add_vertex(position, attributes)
     }
 }
@@ -64,9 +65,18 @@ impl GeometryBuilder for ShapeBuilder {
     }
 }
 
-impl BasicGeometryBuilder for ShapeBuilder {
-    fn add_vertex(&mut self, position: Point) -> Result<VertexId, GeometryBuilderError> {
-        let color = self.default_color;
-        self.add_vertex(position, &color)
-    }
-}
+// impl FillGeometryBuilder for ShapeBuilder {
+//     fn add_fill_vertex(&mut self, vertex: FillVertex) -> Result<VertexId,
+// GeometryBuilderError> {         let color = self.default_color;
+//         self.add_vertex(vertex.position(), &color.interpolated_attributes())
+//     }
+// }
+
+// // impl StrokeGeometryBuilder for ShapeBuilder {
+// //     fn add_stroke_vertex(
+// //         &mut self,
+// //         vertex: StrokeVertex,
+// //     ) -> Result<VertexId, GeometryBuilderError> {
+// //         todo!()
+// //     }
+// // }
