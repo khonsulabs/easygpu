@@ -10,6 +10,24 @@ This project received [its first pull request](https://github.com/khonsulabs/eas
 
 Because I want that to be possible, I'm going to commit to maintaining a [CHANGELOG](./CHANGELOG.md) which will highight breaking changes. This project is severely under-documented (I will try to address that over time), so this is literally the least I can do to help those using this crate in their projects.
 
+## Getting Started
+
+To use easygpu, your project must be using [the new features
+resolver](https://doc.rust-lang.org/cargo/reference/features.html#feature-resolver-version-2). The two
+lines to add to your `Cargo.toml` look like this:
+
+```toml
+[lib]
+resolver = "2"
+
+[dependencies]
+easygpu = "0.0.13"
+```
+
+The `resolver` requirement is inherited from `wgpu`. This setting [will become
+the default in the 2021
+edition](https://github.com/rust-lang/cargo/issues/9048).
+
 ## MIT License
 
 As with most code from [Khonsu Labs](https://khonsulabs.com), this repository is open source under the [MIT License](./LICENSE.txt)
