@@ -1,9 +1,7 @@
 use std::{num::NonZeroU32, ops::Range};
 
 use figures::{Pixels, Size, SizedRect};
-use wgpu::{
-    FilterMode, MultisampleState, SurfaceFrame, TextureAspect, TextureFormat, TextureViewDescriptor,
-};
+use wgpu::{FilterMode, MultisampleState, TextureAspect, TextureFormat, TextureViewDescriptor};
 
 use crate::{
     binding::{Bind, BindingGroup, BindingGroupLayout},
@@ -41,6 +39,7 @@ impl Renderer {
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::default(),
                 compatible_surface: Some(&surface),
+                force_fallback_adapter: false,
             })
             .await
             .ok_or(Error::NoAdaptersFound)?;
@@ -73,13 +72,12 @@ impl Renderer {
 
     pub fn current_frame(&self) -> Result<RenderFrame, wgpu::SurfaceError> {
         let surface = self.device.surface.as_ref().unwrap();
-        let surface_frame = surface.get_current_frame()?;
-        let view = surface_frame
-            .output
+        let surface_texture = surface.get_current_texture()?;
+        let view = surface_texture
             .texture
             .create_view(&TextureViewDescriptor::default());
         Ok(RenderFrame {
-            wgpu: surface_frame,
+            wgpu: Some(surface_texture),
             view,
             depth: self
                 .device
@@ -401,7 +399,7 @@ pub trait RenderTarget {
 
 pub struct RenderFrame {
     pub view: wgpu::TextureView,
-    pub wgpu: SurfaceFrame,
+    pub wgpu: Option<wgpu::SurfaceTexture>,
     pub depth: DepthBuffer,
     pub size: Size<u32, Pixels>,
 }
@@ -413,5 +411,13 @@ impl RenderTarget for RenderFrame {
 
     fn zdepth_target(&self) -> &wgpu::TextureView {
         &self.depth.texture.view
+    }
+}
+
+impl Drop for RenderFrame {
+    fn drop(&mut self) {
+        if let Some(wgpu) = self.wgpu.take() {
+            wgpu.present();
+        }
     }
 }
