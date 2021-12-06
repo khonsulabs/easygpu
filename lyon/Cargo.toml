@@ -1,6 +1,6 @@
 [package]
 name = "easygpu-lyon"
-version = "0.0.14"
+version = "0.0.15"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
 edition = "2018"
 description = "A 2d graphics pipeline for easygpu utilizing lyon"
@@ -11,11 +11,11 @@ categories = ["graphics"]
 repository = "https://github.com/khonsulabs/easygpu-lyon"
 
 [dependencies]
-easygpu = { version = "0.0.14", path = "../easygpu" }
+easygpu = { version = "0.0.15", path = "../easygpu" }
 lyon_tessellation = "0.17"
 bytemuck = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
-winit = "0.25"
+winit = "0.26"
 futures = "0.3"
 env_logger = "0.9"

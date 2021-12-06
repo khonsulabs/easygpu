@@ -1,6 +1,6 @@
 [package]
 name = "easygpu"
-version = "0.0.14"
+version = "0.0.15"
 description = "Simple wrapper around wgpu aiming to make some common operations easier"
 repository = "https://github.com/khonsulabs/easygpu"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
@@ -24,5 +24,5 @@ bytemuck = { version = "1", features = ["derive"] }
 wgpu = { version = "0.11", default-features = false, features = ["webgl"] }
 
 [dev-dependencies]
-winit = "0.25"
+winit = "0.26"
 futures = "0.3"
