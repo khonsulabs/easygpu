@@ -18,15 +18,12 @@ lines to add to your `Cargo.toml` look like this:
 
 ```toml
 [lib]
+# Only needed if using the 2018 edition
 resolver = "2"
 
 [dependencies]
-easygpu = "0.0.13"
+easygpu = "0.1.0"
 ```
-
-The `resolver` requirement is inherited from `wgpu`. This setting [will become
-the default in the 2021
-edition](https://github.com/rust-lang/cargo/issues/9048).
 
 ## MIT License
 

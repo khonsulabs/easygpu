@@ -63,10 +63,7 @@ impl BindingType {
                 multisampled: *multisampled,
                 view_dimension: wgpu::TextureViewDimension::D2,
             },
-            BindingType::Sampler => wgpu::BindingType::Sampler {
-                comparison: false,
-                filtering: true,
-            },
+            BindingType::Sampler => wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
         }
     }
 }

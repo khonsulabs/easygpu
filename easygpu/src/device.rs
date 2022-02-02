@@ -405,7 +405,7 @@ impl Device {
                     front_face: wgpu::FrontFace::Ccw,
                     cull_mode: None,
                     polygon_mode: wgpu::PolygonMode::Fill,
-                    clamp_depth: false,
+                    unclipped_depth: false,
                     conservative: false,
                 },
                 depth_stencil: Some(wgpu::DepthStencilState {
@@ -425,6 +425,7 @@ impl Device {
                     },
                 }),
                 multisample,
+                multiview: None,
                 fragment: Some(wgpu::FragmentState {
                     module: &fs.wgpu,
                     entry_point: "main",
