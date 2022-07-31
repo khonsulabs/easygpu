@@ -54,7 +54,7 @@ impl ShapeBuilder {
     /// Fill an arbitrary path from `lyon::path`
     pub fn fill(&mut self, path: &Path, options: &FillOptions) -> Result<(), TessellationError> {
         let mut tesselator = FillTessellator::new();
-        let _ = tesselator.tessellate_with_ids(path.id_iter(), path, Some(path), options, self)?;
+        tesselator.tessellate_with_ids(path.id_iter(), path, Some(path), options, self)?;
         Ok(())
     }
 
@@ -65,7 +65,7 @@ impl ShapeBuilder {
         options: &StrokeOptions,
     ) -> Result<(), TessellationError> {
         let mut tesselator = StrokeTessellator::new();
-        let _ = tesselator.tessellate_with_ids(path.id_iter(), path, Some(path), options, self)?;
+        tesselator.tessellate_with_ids(path.id_iter(), path, Some(path), options, self)?;
         Ok(())
     }
 

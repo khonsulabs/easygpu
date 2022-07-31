@@ -12,7 +12,7 @@ repository = "https://github.com/khonsulabs/easygpu-lyon"
 
 [dependencies]
 easygpu = { version = "0.1.0", path = "../easygpu" }
-lyon_tessellation = "0.17.10"
+lyon_tessellation = "1.0.1"
 bytemuck = { version = "1.7.3", features = ["derive"] }
 
 [dev-dependencies]

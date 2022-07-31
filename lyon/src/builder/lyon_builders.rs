@@ -46,12 +46,7 @@ impl StrokeGeometryBuilder for ShapeBuilder {
 impl GeometryBuilder for ShapeBuilder {
     fn begin_geometry(&mut self) {}
 
-    fn end_geometry(&mut self) -> lyon_tessellation::Count {
-        lyon_tessellation::Count {
-            vertices: self.vertices.len() as u32,
-            indices: self.indicies.len() as u32,
-        }
-    }
+    fn end_geometry(&mut self) {}
 
     fn add_triangle(&mut self, a: VertexId, b: VertexId, c: VertexId) {
         self.indicies.push(a.0 as u16);
