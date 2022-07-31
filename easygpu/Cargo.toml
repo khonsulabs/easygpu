@@ -14,14 +14,14 @@ all-features = true
 
 [dependencies]
 figures = "0.1.2"
-wgpu = { version = "0.12.0", features = ["spirv"] }
+wgpu = { version = "0.13.1", features = ["spirv"] }
 num-traits = "0.2.14"
 thiserror = "1.0.30"
 bytemuck = { version = "1.7.3", features = ["derive"] }
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wgpu = { version = "0.12.0", default-features = false, features = ["webgl"] }
+wgpu = { version = "0.13.1", default-features = false, features = ["webgl"] }
 
 [dev-dependencies]
 winit = "0.26.1"

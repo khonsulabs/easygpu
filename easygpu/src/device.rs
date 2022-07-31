@@ -1,5 +1,7 @@
 use figures::{Pixels, Size};
-use wgpu::{util::DeviceExt, FilterMode, MultisampleState, TextureFormat, TextureUsages};
+use wgpu::{
+    util::DeviceExt, FilterMode, MultisampleState, SubmissionIndex, TextureFormat, TextureUsages,
+};
 
 use crate::{
     binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
@@ -113,7 +115,7 @@ impl Device {
         Shader {
             wgpu: self
                 .wgpu
-                .create_shader_module(&wgpu::ShaderModuleDescriptor {
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
                     source: wgpu::util::make_spirv(source),
                     label: None, // TODO labels would be nice
                 }),
@@ -124,7 +126,7 @@ impl Device {
         Shader {
             wgpu: self
                 .wgpu
-                .create_shader_module(&wgpu::ShaderModuleDescriptor {
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
                     source: wgpu::ShaderSource::Wgsl(source.into()),
                     label: None, // TODO labels would be nice
                 }),
@@ -357,8 +359,11 @@ impl Device {
             .write_buffer(&buf.wgpu, 0, bytemuck::cast_slice(slice));
     }
 
-    pub fn submit<I: IntoIterator<Item = wgpu::CommandBuffer>>(&mut self, cmds: I) {
-        self.queue.submit(cmds);
+    pub fn submit<I: IntoIterator<Item = wgpu::CommandBuffer>>(
+        &mut self,
+        cmds: I,
+    ) -> SubmissionIndex {
+        self.queue.submit(cmds)
     }
 
     // TODO clippy::too_many_arguments
@@ -429,7 +434,7 @@ impl Device {
                 fragment: Some(wgpu::FragmentState {
                     module: &fs.wgpu,
                     entry_point: "main",
-                    targets: &[wgpu::ColorTargetState {
+                    targets: &[Some(wgpu::ColorTargetState {
                         format: swapchain_format,
                         blend: Some(wgpu::BlendState {
                             color: wgpu::BlendComponent {
@@ -445,7 +450,7 @@ impl Device {
                         }),
 
                         write_mask: wgpu::ColorWrites::ALL,
-                    }],
+                    })],
                 }),
             });
 

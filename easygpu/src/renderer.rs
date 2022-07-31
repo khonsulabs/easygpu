@@ -1,4 +1,8 @@
-use std::{num::NonZeroU32, ops::Range};
+use std::{
+    num::NonZeroU32,
+    ops::Range,
+    sync::{Arc, Mutex},
+};
 
 use figures::{Pixels, Size, SizedRect};
 use wgpu::{FilterMode, MultisampleState, TextureAspect, TextureFormat, TextureViewDescriptor};
@@ -161,7 +165,7 @@ impl Renderer {
         )
     }
 
-    pub async fn read<F>(&mut self, fb: &Framebuffer, f: F) -> Result<(), wgpu::BufferAsyncError>
+    pub fn read<F>(&mut self, fb: &Framebuffer, f: F) -> Result<(), wgpu::BufferAsyncError>
     where
         F: 'static + FnOnce(&[Bgra8]),
     {
@@ -193,12 +197,33 @@ impl Renderer {
             },
             fb.texture.extent,
         );
-        self.device.submit(vec![encoder.finish()]);
+        let submission_index = self.device.submit(vec![encoder.finish()]);
 
         let mut buffer: Vec<u8> = Vec::with_capacity(bytesize);
 
         let dst = gpu_buffer.slice(0..bytesize as u64);
-        dst.map_async(wgpu::MapMode::Read).await?;
+        let result = Arc::new(Mutex::new(None));
+        let callback_result = result.clone();
+        dst.map_async(wgpu::MapMode::Read, move |map_result| {
+            let mut result = callback_result.lock().unwrap();
+            *result = Some(map_result);
+        });
+
+        loop {
+            let queue_empty = self
+                .device
+                .wgpu
+                .poll(wgpu::MaintainBase::WaitForSubmissionIndex(submission_index));
+            let mut result = result.lock().unwrap();
+            match result.take() {
+                Some(Ok(())) => break,
+                Some(Err(err)) => return Err(err),
+                None => {
+                    assert!(!queue_empty);
+                    continue;
+                }
+            }
+        }
 
         let view = dst.get_mapped_range();
         buffer.extend_from_slice(&*view);
@@ -313,14 +338,14 @@ impl<'a> RenderPassExt<'a> for wgpu::RenderPass<'a> {
     ) -> Self {
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: None,
-            color_attachments: &[wgpu::RenderPassColorAttachment {
+            color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                 view,
                 resolve_target,
                 ops: wgpu::Operations {
                     load: op.to_wgpu(),
                     store: true,
                 },
-            }],
+            })],
             depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
                 view: depth,
                 depth_ops: Some(wgpu::Operations {
