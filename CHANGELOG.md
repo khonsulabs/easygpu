@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v0.2.0
+
+### Changes
+
+- `wgpu` has been updated to 0.13.1.
+- `lyon_tesselation` has been updated to 1.0.1
+- `Renderer::read` is no longer async and blocks the current thread when called.
+  This is due to underlying changes with how wgpu's `BufferSlice::map_async` is
+  no longer future-based. There was no way to keep this API async while still
+  remaining runtime independence within easygpu, so the decision was made to
+  make this a blocking call.
+
 ## v0.1.0
 
 ### Changes
