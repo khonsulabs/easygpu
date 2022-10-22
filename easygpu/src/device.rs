@@ -1,6 +1,7 @@
 use figures::{Pixels, Size};
 use wgpu::{
-    util::DeviceExt, FilterMode, MultisampleState, SubmissionIndex, TextureFormat, TextureUsages,
+    util::DeviceExt, CompositeAlphaMode, FilterMode, MultisampleState, SubmissionIndex,
+    TextureFormat, TextureUsages,
 };
 
 use crate::{
@@ -95,6 +96,7 @@ impl Device {
             present_mode: mode.into(),
             width: size.width,
             height: size.height,
+            alpha_mode: CompositeAlphaMode::Auto,
         };
         self.surface
             .as_ref()
