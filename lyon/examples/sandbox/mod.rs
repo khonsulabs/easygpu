@@ -1,14 +1,10 @@
-use easygpu::{
-    figures::Size,
-    prelude::*,
-    wgpu::{PresentMode, TextureUsages},
-};
+use easygpu::figures::Size;
+use easygpu::prelude::*;
+use easygpu::wgpu::{PresentMode, TextureUsages};
 use easygpu_lyon::{LyonPipeline, Srgb, VertexShaderSource};
-use winit::{
-    event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
-    window::Window,
-};
+use winit::event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent};
+use winit::event_loop::{ControlFlow, EventLoop};
+use winit::window::Window;
 
 const MSAA_SAMPLE_COUNT: u32 = 4;
 
@@ -69,7 +65,7 @@ pub trait Sandbox: Sized + 'static {
                 }
                 _ => {}
             },
-            Event::RedrawRequested(_) =>
+            Event::RedrawRequested(_) => {
                 if let Ok(output) = renderer.current_frame() {
                     let mut frame = renderer.frame();
                     renderer.update_pipeline(
@@ -94,7 +90,8 @@ pub trait Sandbox: Sized + 'static {
                         sandbox.render(&mut pass);
                     }
                     renderer.present(frame);
-                },
+                }
+            }
             _ => {
                 *control_flow = ControlFlow::Wait;
             }

@@ -1,9 +1,13 @@
 use figures::SizedRect;
 
-use crate::{
-    binding::Bind, buffers::DepthBuffer, canvas::Canvas, color::Bgra8, device::Device,
-    renderer::RenderTarget, texture::Texture, transform::ScreenSpace,
-};
+use crate::binding::Bind;
+use crate::buffers::DepthBuffer;
+use crate::canvas::Canvas;
+use crate::color::Bgra8;
+use crate::device::Device;
+use crate::renderer::RenderTarget;
+use crate::texture::Texture;
+use crate::transform::ScreenSpace;
 /// Off-screen framebuffer. Can be used as a render target in render passes.
 #[derive(Debug)]
 pub struct Framebuffer {

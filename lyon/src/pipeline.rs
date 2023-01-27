@@ -1,7 +1,9 @@
-use std::{marker::PhantomData, ops::Deref};
+use std::marker::PhantomData;
+use std::ops::Deref;
 
 use bytemuck::{Pod, Zeroable};
-use easygpu::{prelude::*, wgpu::TextureFormat};
+use easygpu::prelude::*;
+use easygpu::wgpu::TextureFormat;
 
 /// A pipeline for rendering shapes.
 pub struct LyonPipeline<T> {
@@ -89,10 +91,10 @@ where
     ) -> Option<(&'a UniformBuffer, Vec<Self::Uniforms>)> {
         let ortho = ortho.to_array();
         let transform = ScreenTransformation::identity().to_array();
-        Some((&self.pipeline.uniforms, vec![self::Uniforms {
-            transform,
-            ortho,
-        }]))
+        Some((
+            &self.pipeline.uniforms,
+            vec![self::Uniforms { transform, ortho }],
+        ))
     }
 }
 

@@ -1,6 +1,7 @@
 use figures::SizedRect;
 
-use crate::{device::Device, transform::ScreenSpace};
+use crate::device::Device;
+use crate::transform::ScreenSpace;
 
 pub trait Canvas {
     type Color;

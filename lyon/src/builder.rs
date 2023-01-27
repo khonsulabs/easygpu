@@ -1,9 +1,12 @@
 use std::sync::Arc;
 
-use easygpu::{color::Rgba, renderer::Renderer};
+use easygpu::color::Rgba;
+use easygpu::renderer::Renderer;
+use lyon_tessellation::math::Point;
+use lyon_tessellation::path::Path;
 use lyon_tessellation::{
-    math::Point, path::Path, FillOptions, FillTessellator, GeometryBuilderError, StrokeOptions,
-    StrokeTessellator, TessellationError, VertexId,
+    FillOptions, FillTessellator, GeometryBuilderError, StrokeOptions, StrokeTessellator,
+    TessellationError, VertexId,
 };
 
 use crate::shape::{Shape, Vertex};

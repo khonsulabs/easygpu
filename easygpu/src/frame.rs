@@ -1,9 +1,7 @@
 use wgpu::TextureView;
 
-use crate::{
-    buffers::UniformBuffer,
-    renderer::{PassOp, RenderPassExt, RenderTarget},
-};
+use crate::buffers::UniformBuffer;
+use crate::renderer::{PassOp, RenderPassExt, RenderTarget};
 
 #[derive(Debug)]
 pub struct Frame {

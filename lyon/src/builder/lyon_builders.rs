@@ -3,7 +3,8 @@ use lyon_tessellation::{
     StrokeGeometryBuilder, StrokeVertex, StrokeVertexConstructor, VertexId,
 };
 
-use crate::{builder::ShapeBuilder, shape::Vertex};
+use crate::builder::ShapeBuilder;
+use crate::shape::Vertex;
 
 impl FillVertexConstructor<Vertex> for ShapeBuilder {
     fn new_vertex(&mut self, mut vertex: FillVertex) -> Vertex {

@@ -1,10 +1,8 @@
 use std::sync::Arc;
 
 use bytemuck::{Pod, Zeroable};
-use easygpu::{
-    buffers::{IndexBuffer, VertexBuffer},
-    color::Rgba8,
-};
+use easygpu::buffers::{IndexBuffer, VertexBuffer};
+use easygpu::color::Rgba8;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Pod, Zeroable)]

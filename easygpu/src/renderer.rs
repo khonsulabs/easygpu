@@ -1,26 +1,22 @@
-use std::{
-    num::NonZeroU32,
-    ops::Range,
-    sync::{Arc, Mutex},
-};
+use std::num::NonZeroU32;
+use std::ops::Range;
+use std::sync::{Arc, Mutex};
 
 use figures::{Pixels, Size, SizedRect};
 use wgpu::{FilterMode, MultisampleState, TextureAspect, TextureFormat, TextureViewDescriptor};
 
-use crate::{
-    binding::{Bind, BindingGroup, BindingGroupLayout},
-    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
-    canvas::Canvas,
-    color::{Bgra8, Rgba},
-    device::Device,
-    error::Error,
-    frame::Frame,
-    pipeline::{AbstractPipeline, Blending},
-    sampler::Sampler,
-    texture::Texture,
-    transform::ScreenSpace,
-    vertex::VertexLayout,
-};
+use crate::binding::{Bind, BindingGroup, BindingGroupLayout};
+use crate::buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer};
+use crate::canvas::Canvas;
+use crate::color::{Bgra8, Rgba};
+use crate::device::Device;
+use crate::error::Error;
+use crate::frame::Frame;
+use crate::pipeline::{AbstractPipeline, Blending};
+use crate::sampler::Sampler;
+use crate::texture::Texture;
+use crate::transform::ScreenSpace;
+use crate::vertex::VertexLayout;
 
 pub trait Draw {
     fn draw<'a, 'b>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>);

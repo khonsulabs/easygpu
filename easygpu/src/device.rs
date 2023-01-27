@@ -1,19 +1,17 @@
 use figures::{Pixels, Size};
+use wgpu::util::DeviceExt;
 use wgpu::{
-    util::DeviceExt, CompositeAlphaMode, FilterMode, MultisampleState, SubmissionIndex,
-    TextureFormat, TextureUsages,
+    CompositeAlphaMode, FilterMode, MultisampleState, SubmissionIndex, TextureFormat, TextureUsages,
 };
 
-use crate::{
-    binding::{Bind, Binding, BindingGroup, BindingGroupLayout},
-    buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer},
-    pipeline::{Blending, Pipeline, PipelineLayout, Set},
-    sampler::Sampler,
-    shader::Shader,
-    texture::Texture,
-    transform::ScreenSpace,
-    vertex::VertexLayout,
-};
+use crate::binding::{Bind, Binding, BindingGroup, BindingGroupLayout};
+use crate::buffers::{DepthBuffer, Framebuffer, IndexBuffer, UniformBuffer, VertexBuffer};
+use crate::pipeline::{Blending, Pipeline, PipelineLayout, Set};
+use crate::sampler::Sampler;
+use crate::shader::Shader;
+use crate::texture::Texture;
+use crate::transform::ScreenSpace;
+use crate::vertex::VertexLayout;
 
 #[derive(Debug)]
 pub struct Device {

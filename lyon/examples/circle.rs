@@ -1,6 +1,7 @@
 use easygpu::prelude::*;
 use easygpu_lyon::{LyonPipeline, Shape, ShapeBuilder, Srgb, VertexShaderSource};
-use lyon_tessellation::{math::Point, FillOptions, FillTessellator};
+use lyon_tessellation::math::Point;
+use lyon_tessellation::{FillOptions, FillTessellator};
 
 mod sandbox;
 use sandbox::Sandbox;

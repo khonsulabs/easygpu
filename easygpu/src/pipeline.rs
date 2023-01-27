@@ -1,11 +1,9 @@
 use std::ops::Deref;
 
-use crate::{
-    binding::{Binding, BindingGroup, BindingGroupLayout},
-    buffers::UniformBuffer,
-    device::Device,
-    vertex::{VertexFormat, VertexLayout},
-};
+use crate::binding::{Binding, BindingGroup, BindingGroupLayout};
+use crate::buffers::UniformBuffer;
+use crate::device::Device;
+use crate::vertex::{VertexFormat, VertexLayout};
 
 #[derive(Debug)]
 pub struct Pipeline {

@@ -16,13 +16,23 @@ pub mod texture;
 pub mod transform;
 pub mod vertex;
 
-pub use figures;
-pub use wgpu;
+pub use {figures, wgpu};
 
 pub mod prelude {
-    pub use super::{
-        binding::*, buffers::*, canvas::*, color::*, device::*, error::*, frame::*, pipeline::*,
-        renderable::*, renderer::*, sampler::*, shader::*, texture::*, transform::*, vertex::*,
-        wgpu,
-    };
+    pub use super::binding::*;
+    pub use super::buffers::*;
+    pub use super::canvas::*;
+    pub use super::color::*;
+    pub use super::device::*;
+    pub use super::error::*;
+    pub use super::frame::*;
+    pub use super::pipeline::*;
+    pub use super::renderable::*;
+    pub use super::renderer::*;
+    pub use super::sampler::*;
+    pub use super::shader::*;
+    pub use super::texture::*;
+    pub use super::transform::*;
+    pub use super::vertex::*;
+    pub use super::wgpu;
 }

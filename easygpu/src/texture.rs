@@ -3,10 +3,12 @@ use std::num::NonZeroU32;
 use figures::{ExtentsRect, Point, Rectlike, Size, SizedRect};
 use wgpu::TextureAspect;
 
-use crate::{
-    binding::Bind, buffers::Framebuffer, canvas::Canvas, color::Rgba8, device::Device,
-    transform::ScreenSpace,
-};
+use crate::binding::Bind;
+use crate::buffers::Framebuffer;
+use crate::canvas::Canvas;
+use crate::color::Rgba8;
+use crate::device::Device;
+use crate::transform::ScreenSpace;
 
 #[derive(Debug)]
 pub struct Texture {
