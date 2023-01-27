@@ -97,6 +97,7 @@ impl Device {
             width: size.width,
             height: size.height,
             alpha_mode: CompositeAlphaMode::Auto,
+            view_formats: Vec::new(),
         };
         self.surface
             .as_ref()
@@ -160,6 +161,7 @@ impl Device {
             format,
             usage,
             label: None,
+            view_formats: &[],
         });
         let texture_view = texture.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -194,6 +196,7 @@ impl Device {
                 | TextureUsages::COPY_SRC
                 | TextureUsages::RENDER_ATTACHMENT,
             label: None,
+            view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -224,6 +227,7 @@ impl Device {
             dimension: wgpu::TextureDimension::D2,
             format,
             usage: TextureUsages::COPY_DST | TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
         });
         let view = wgpu.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -309,7 +313,7 @@ impl Device {
                 mag_filter,
                 min_filter,
                 mipmap_filter: wgpu::FilterMode::Nearest,
-                lod_min_clamp: -100.0,
+                lod_min_clamp: 0.,
                 lod_max_clamp: 100.0,
                 compare: None,
                 anisotropy_clamp: None,

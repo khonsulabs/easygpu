@@ -209,24 +209,27 @@ impl Renderer {
             *result = Some(map_result);
         });
 
+        let mut queue_empty = self
+            .device
+            .wgpu
+            .poll(wgpu::MaintainBase::WaitForSubmissionIndex(submission_index));
         loop {
-            let queue_empty = self
-                .device
-                .wgpu
-                .poll(wgpu::MaintainBase::WaitForSubmissionIndex(submission_index));
-            let mut result = result.lock().unwrap();
-            match result.take() {
+            let result = result.lock().unwrap().take();
+            match result {
                 Some(Ok(())) => break,
                 Some(Err(err)) => return Err(err),
                 None => {
                     assert!(!queue_empty);
-                    continue;
+
+                    // We didn't get our map callback, but the submission is done.
+                    // We'll keep polling the device until we get our map callback.
+                    queue_empty = self.device.wgpu.poll(wgpu::MaintainBase::Poll);
                 }
             }
         }
 
         let view = dst.get_mapped_range();
-        buffer.extend_from_slice(&*view);
+        buffer.extend_from_slice(&view);
         if buffer.len() == bytesize {
             let (head, body, tail) = unsafe { buffer.align_to::<Bgra8>() };
             if !(head.is_empty() && tail.is_empty()) {

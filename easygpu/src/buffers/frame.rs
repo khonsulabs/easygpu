@@ -41,7 +41,7 @@ impl RenderTarget for Framebuffer {
 impl Bind for Framebuffer {
     fn binding(&self, index: u32) -> wgpu::BindGroupEntry {
         wgpu::BindGroupEntry {
-            binding: index as u32,
+            binding: index,
             resource: wgpu::BindingResource::TextureView(&self.texture.view),
         }
     }

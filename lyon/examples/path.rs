@@ -9,7 +9,7 @@ use lyon_tessellation::{
 mod sandbox;
 use sandbox::Sandbox;
 
-fn main() -> Result<(), easygpu::error::Error> {
+fn main() -> anyhow::Result<()> {
     PathExample::run()
 }
 

@@ -99,7 +99,7 @@ impl Texture {
         // We have to invert the Y coordinate as explained above.
         let destination_point = Point::new(
             rect.origin.x as u32,
-            texture.size.height as u32 - rect.origin.y as u32,
+            texture.size.height - rect.origin.y as u32,
         );
 
         assert!(
@@ -157,8 +157,8 @@ impl Texture {
                 aspect: TextureAspect::All,
             },
             wgpu::Extent3d {
-                width: src.width().get() as u32,
-                height: src.height().get() as u32,
+                width: src.width().get(),
+                height: src.height().get(),
                 depth_or_array_layers: 1,
             },
         );
@@ -199,7 +199,7 @@ impl Texture {
 impl Bind for Texture {
     fn binding(&self, index: u32) -> wgpu::BindGroupEntry {
         wgpu::BindGroupEntry {
-            binding: index as u32,
+            binding: index,
             resource: wgpu::BindingResource::TextureView(&self.view),
         }
     }

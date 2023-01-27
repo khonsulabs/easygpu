@@ -5,7 +5,7 @@ use lyon_tessellation::{math::Point, FillOptions, FillTessellator};
 mod sandbox;
 use sandbox::Sandbox;
 
-fn main() -> Result<(), easygpu::error::Error> {
+fn main() -> anyhow::Result<()> {
     CircleExample::run()
 }
 

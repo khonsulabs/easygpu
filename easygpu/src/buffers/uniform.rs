@@ -13,7 +13,7 @@ pub struct UniformBuffer {
 impl Bind for UniformBuffer {
     fn binding(&self, index: u32) -> wgpu::BindGroupEntry {
         wgpu::BindGroupEntry {
-            binding: index as u32,
+            binding: index,
             resource: wgpu::BindingResource::Buffer(wgpu::BufferBinding {
                 buffer: &self.wgpu,
                 offset: 0,

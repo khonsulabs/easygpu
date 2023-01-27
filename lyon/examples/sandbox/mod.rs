@@ -17,15 +17,15 @@ pub trait Sandbox: Sized + 'static {
     fn pipeline(&self) -> &'_ LyonPipeline<Srgb>;
     fn render<'a, 'b>(&'a self, pass: &'b mut easygpu::wgpu::RenderPass<'a>);
 
-    fn run() -> Result<(), easygpu::error::Error> {
+    fn run() -> anyhow::Result<()> {
         env_logger::init();
         let event_loop = EventLoop::new();
         let window = Window::new(&event_loop).unwrap();
         let size = window.inner_size();
 
         // Setup renderer
-        let instance = easygpu::wgpu::Instance::new(easygpu::wgpu::Backends::PRIMARY);
-        let surface = unsafe { instance.create_surface(&window) };
+        let instance = easygpu::wgpu::Instance::new(easygpu::wgpu::InstanceDescriptor::default());
+        let surface = unsafe { instance.create_surface(&window) }?;
         let mut renderer = futures::executor::block_on(Renderer::for_surface(
             surface,
             &instance,

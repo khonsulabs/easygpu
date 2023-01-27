@@ -8,7 +8,7 @@ pub struct Sampler {
 impl Bind for Sampler {
     fn binding(&self, index: u32) -> wgpu::BindGroupEntry {
         wgpu::BindGroupEntry {
-            binding: index as u32,
+            binding: index,
             resource: wgpu::BindingResource::Sampler(&self.wgpu),
         }
     }

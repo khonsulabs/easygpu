@@ -1,6 +1,6 @@
 [package]
 name = "easygpu"
-version = "0.3.0"
+version = "0.4.0"
 description = "Simple wrapper around wgpu aiming to make some common operations easier"
 repository = "https://github.com/khonsulabs/easygpu"
 authors = ["Jonathan Johnson <jon@khonsulabs.com>"]
@@ -14,14 +14,14 @@ all-features = true
 
 [dependencies]
 figures = "0.1.2"
-wgpu = { version = "0.14.0", features = ["spirv"] }
+wgpu = { version = "0.15.0", features = ["spirv"] }
 num-traits = "0.2.14"
 thiserror = "1.0.30"
 bytemuck = { version = "1.7.3", features = ["derive"] }
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wgpu = { version = "0.14.0", default-features = false, features = ["webgl"] }
+wgpu = { version = "0.15.0", default-features = false, features = ["webgl"] }
 
 [dev-dependencies]
 winit = "0.27.4"
