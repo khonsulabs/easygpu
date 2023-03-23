@@ -32,7 +32,7 @@ pub trait Sandbox: Sized + 'static {
 
         renderer.configure(size, PresentMode::Fifo, Srgb::sampler_format());
 
-        let multisample_texture = renderer.texture(
+        let mut multisample_texture = renderer.texture(
             size,
             Srgb::sampler_format(),
             TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING,
@@ -45,12 +45,15 @@ pub trait Sandbox: Sized + 'static {
                     *control_flow = ControlFlow::Exit;
                 }
                 WindowEvent::Resized(new_size) => {
-                    renderer.configure(
-                        Size::new(new_size.width, new_size.height).cast::<u32>(),
-                        PresentMode::Fifo,
+                    let new_size = Size::new(new_size.width, new_size.height).cast::<u32>();
+                    renderer.configure(new_size, PresentMode::Fifo, Srgb::sampler_format());
+                    // Recreate the texture to match the new output size.
+                    multisample_texture = renderer.texture(
+                        new_size,
                         Srgb::sampler_format(),
+                        TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING,
+                        MSAA_SAMPLE_COUNT > 1,
                     );
-                    *control_flow = ControlFlow::Wait;
                 }
                 WindowEvent::KeyboardInput {
                     input:
