@@ -1,4 +1,4 @@
-#![deny(clippy::all)]
+#![warn(clippy::all)]
 
 pub mod binding;
 pub mod buffers;

@@ -55,7 +55,7 @@ impl Sandbox for PathExample {
         &self.pipeline
     }
 
-    fn render<'a, 'b>(&'a self, pass: &'b mut easygpu::wgpu::RenderPass<'a>) {
+    fn render<'a>(&'a self, pass: &mut easygpu::wgpu::RenderPass<'a>) {
         pass.set_easy_pipeline(&self.pipeline);
         self.shape.draw(pass);
     }

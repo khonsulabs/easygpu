@@ -8,7 +8,7 @@ pub struct VertexBuffer {
 }
 
 impl Draw for VertexBuffer {
-    fn draw<'a, 'b, 'c>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>) {
+    fn draw<'a>(&'a self, binding: &'a BindingGroup, pass: &mut wgpu::RenderPass<'a>) {
         // TODO: If we attempt to draw more vertices than exist in the buffer, because
         // 'size' was guessed wrong, we get a wgpu error. We should somehow try to
         // get the pipeline layout to know here if the buffer we're trying to draw

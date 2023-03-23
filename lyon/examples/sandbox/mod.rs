@@ -11,7 +11,7 @@ const MSAA_SAMPLE_COUNT: u32 = 4;
 pub trait Sandbox: Sized + 'static {
     fn create(renderer: &Renderer) -> Self;
     fn pipeline(&self) -> &'_ LyonPipeline<Srgb>;
-    fn render<'a, 'b>(&'a self, pass: &'b mut easygpu::wgpu::RenderPass<'a>);
+    fn render<'a>(&'a self, pass: &mut easygpu::wgpu::RenderPass<'a>);
 
     fn run() -> anyhow::Result<()> {
         env_logger::init();

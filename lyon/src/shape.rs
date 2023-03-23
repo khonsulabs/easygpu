@@ -29,7 +29,7 @@ impl Shape {
     /// # Arguments
     ///
     /// * `pass`- The render pass to draw to.
-    pub fn draw<'a, 'b>(&'a self, pass: &'b mut easygpu::wgpu::RenderPass<'a>) {
+    pub fn draw<'a>(&'a self, pass: &mut easygpu::wgpu::RenderPass<'a>) {
         pass.set_vertex_buffer(0, self.vertices.slice());
         pass.set_index_buffer(self.indices.slice(), easygpu::wgpu::IndexFormat::Uint16);
         pass.draw_indexed(0..self.index_count, 0, 0..1)

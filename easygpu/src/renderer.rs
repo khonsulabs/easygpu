@@ -19,7 +19,7 @@ use crate::transform::ScreenSpace;
 use crate::vertex::VertexLayout;
 
 pub trait Draw {
-    fn draw<'a, 'b>(&'a self, binding: &'a BindingGroup, pass: &'b mut wgpu::RenderPass<'a>);
+    fn draw<'a>(&'a self, binding: &'a BindingGroup, pass: &mut wgpu::RenderPass<'a>);
 }
 
 #[derive(Debug)]
