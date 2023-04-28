@@ -1,4 +1,3 @@
-use std::num::NonZeroU32;
 use std::ops::Range;
 use std::sync::{Arc, Mutex};
 
@@ -187,8 +186,8 @@ impl Renderer {
                 layout: wgpu::ImageDataLayout {
                     offset: 0,
                     // TODO: Must be a multiple of 256
-                    bytes_per_row: NonZeroU32::new(4 * fb.texture.size.width),
-                    rows_per_image: NonZeroU32::new(fb.texture.size.height),
+                    bytes_per_row: Some(4 * fb.texture.size.width),
+                    rows_per_image: Some(fb.texture.size.height),
                 },
             },
             fb.texture.extent,
