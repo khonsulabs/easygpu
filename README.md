@@ -1,5 +1,16 @@
 # easygpu
 
+> *This crate is unmaintained*. A rewrite of [Kludgine][kludgine] has embraced
+> an API design supporting [encapsulation][encapsulating]. When this rewrite was
+> occuring, the lines between what should belong in easygpu and what should be
+> in Kludgine were hard to define, so the new version of Kludgine no longer is
+> based on this crate.
+>
+> If someone reading this wishes to take over maintenance and updates, please
+> mention [@ecton](https://github.com/ecton) in an issue on your fork of this
+> project that has been updated to the current wgpu version, and I will transfer
+> publishing rights on crates.io to you.
+
 This crate exists purely as a middle layer for [Kludgine](https://github.com/khonsulabs/kludgine) to interact with wgpu-rs. It was extracted from [rgx](https://github.com/cloudhead/rgx) as part of an attempt to upgrade from wgpu 0.4 to 0.6, which had several breaking issues.
 
 The purpose of this crate is to house some abstractions for wgpu that make life a little easier. For example, Vertex and Index buffers know how big they are. The secondary goal of this crate is to expose how it does all of the easy work, so that if you need to replace parts of it with hand-written WGPU code, you can do it without waiting for this crate to get an update.
@@ -28,3 +39,6 @@ easygpu = "0.1.0"
 ## MIT License
 
 As with most code from [Khonsu Labs](https://khonsulabs.com), this repository is open source under the [MIT License](./LICENSE.txt)
+
+[encapsulating]: https://github.com/gfx-rs/wgpu/wiki/Encapsulating-Graphics-Work
+[kludgine]: https://github.com/khonsulabs/kludgine
